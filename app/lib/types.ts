@@ -104,3 +104,58 @@ export interface EvaluateResult {
   pivotSuggestions: string[];
   budgetBreakdown?: BudgetBreakdown;
 }
+
+// --- Investor AI types ---
+
+export interface InvestorProfile {
+  name: string;
+  organization: string | null;
+  investmentFocus: string[];
+  investmentMin: number | null;
+  investmentMax: number | null;
+}
+
+export interface IdeaInsightResult {
+  investmentScore: number;
+  keyBenefits: string[];
+  riskFactors: string[];
+  marketOpportunity: string;
+  returnPotential: string;
+  recommendation: string;
+  alignmentNote: string;
+}
+
+export interface RankedIdea {
+  ideaId: string;
+  rank: number;
+  title: string;
+  alignmentScore: number;
+  reasoning: string;
+  topBenefit: string;
+}
+
+export interface RankIdeasResult {
+  rankedIdeas: RankedIdea[];
+  summaryNote: string;
+}
+
+export interface ComparisonDimension {
+  label: string;
+  scores: Record<string, number>;
+  winner: string;
+}
+
+export interface IdeaComparisonEntry {
+  ideaId: string;
+  title: string;
+  investmentScore: number;
+  summary: string;
+}
+
+export interface CompareIdeasResult {
+  winner: string;
+  winnerReason: string;
+  ideas: IdeaComparisonEntry[];
+  dimensions: ComparisonDimension[];
+  recommendation: string;
+}
