@@ -20,7 +20,9 @@ Key facts about Kosovska Mitrovica:
 - Strong cafe/restaurant culture, social gathering importance
 - Growing demand for modern services (delivery, tech, e-commerce)
 
-Always provide practical, actionable advice tailored to the local context. Be encouraging but realistic. All monetary values should be in EUR.`;
+Always provide practical, actionable advice tailored to the local context. Be encouraging but realistic. All monetary values should be in EUR.
+
+Always respond in Serbian language (srpski jezik).`;
 
 export async function analyzeLocation(
   lat: number,

@@ -5,6 +5,142 @@ export const MITROVICA_CENTER = {
 
 export const DEFAULT_ZOOM = 14;
 
+export type ZoneRating = "green" | "yellow" | "red";
+
+export interface BusinessZone {
+  id: string;
+  name: string;
+  description: string;
+  rating: ZoneRating;
+  color: string;
+  fillColor: string;
+  highlights: string[];
+  paths: Array<{ lat: number; lng: number }>;
+}
+
+export const BUSINESS_ZONES: BusinessZone[] = [
+  {
+    id: "city-center",
+    name: "City Center – Pedestrian Zone",
+    description: "Highest foot traffic in the city. Prime retail, café, and services location.",
+    rating: "green",
+    color: "#22c55e",
+    fillColor: "#22c55e",
+    highlights: ["High foot traffic", "Strong purchasing power", "Excellent visibility"],
+    paths: [
+      { lat: 42.8855, lng: 20.8620 },
+      { lat: 42.8855, lng: 20.8710 },
+      { lat: 42.8815, lng: 20.8710 },
+      { lat: 42.8815, lng: 20.8620 },
+    ],
+  },
+  {
+    id: "university-quarter",
+    name: "University Quarter",
+    description: "Student-dense area near Mitrovica faculties. Great for tech startups, tutoring, food, and creative services.",
+    rating: "green",
+    color: "#22c55e",
+    fillColor: "#22c55e",
+    highlights: ["Large student population", "Low competition", "Tech & education demand"],
+    paths: [
+      { lat: 42.8800, lng: 20.8540 },
+      { lat: 42.8800, lng: 20.8625 },
+      { lat: 42.8755, lng: 20.8625 },
+      { lat: 42.8755, lng: 20.8540 },
+    ],
+  },
+  {
+    id: "main-bazaar",
+    name: "Main Bazaar & Market",
+    description: "Traditional market hub. Ideal for retail, food stalls, wholesale, and mixed businesses.",
+    rating: "green",
+    color: "#22c55e",
+    fillColor: "#22c55e",
+    highlights: ["Daily market activity", "Mixed demographics", "Strong local demand"],
+    paths: [
+      { lat: 42.8835, lng: 20.8710 },
+      { lat: 42.8835, lng: 20.8790 },
+      { lat: 42.8795, lng: 20.8790 },
+      { lat: 42.8795, lng: 20.8710 },
+    ],
+  },
+  {
+    id: "south-residential",
+    name: "South Residential-Commercial",
+    description: "Growing mixed-use area with moderate demand. Good for local services, health & wellness, delivery startups.",
+    rating: "yellow",
+    color: "#eab308",
+    fillColor: "#eab308",
+    highlights: ["Growing population", "Underserved market", "Lower rent costs"],
+    paths: [
+      { lat: 42.8755, lng: 20.8580 },
+      { lat: 42.8755, lng: 20.8720 },
+      { lat: 42.8700, lng: 20.8720 },
+      { lat: 42.8700, lng: 20.8580 },
+    ],
+  },
+  {
+    id: "west-corridor",
+    name: "Western Commercial Corridor",
+    description: "Emerging strip along main western road. Suitable for auto services, wholesale, and delivery hubs.",
+    rating: "yellow",
+    color: "#eab308",
+    fillColor: "#eab308",
+    highlights: ["Road-side visibility", "Growing traffic", "Affordable space"],
+    paths: [
+      { lat: 42.8870, lng: 20.8480 },
+      { lat: 42.8870, lng: 20.8590 },
+      { lat: 42.8800, lng: 20.8590 },
+      { lat: 42.8800, lng: 20.8480 },
+    ],
+  },
+  {
+    id: "north-center",
+    name: "North Mitrovica Center",
+    description: "Commercial activity exists but cross-community dynamics add complexity. Niche opportunities for bold entrepreneurs.",
+    rating: "yellow",
+    color: "#eab308",
+    fillColor: "#eab308",
+    highlights: ["Underserved niches", "Cross-community potential", "Lower competition"],
+    paths: [
+      { lat: 42.8970, lng: 20.8590 },
+      { lat: 42.8970, lng: 20.8760 },
+      { lat: 42.8900, lng: 20.8760 },
+      { lat: 42.8900, lng: 20.8590 },
+    ],
+  },
+  {
+    id: "industrial-north",
+    name: "Northern Industrial Zone",
+    description: "Old heavy industrial area with low consumer traffic. Not recommended for retail or services.",
+    rating: "red",
+    color: "#ef4444",
+    fillColor: "#ef4444",
+    highlights: ["Low foot traffic", "Industrial land use", "Poor consumer access"],
+    paths: [
+      { lat: 42.9080, lng: 20.8540 },
+      { lat: 42.9080, lng: 20.8760 },
+      { lat: 42.8980, lng: 20.8760 },
+      { lat: 42.8980, lng: 20.8540 },
+    ],
+  },
+  {
+    id: "east-outskirts",
+    name: "Eastern Outskirts",
+    description: "Low-density suburban fringe with minimal infrastructure. Very challenging for most business types.",
+    rating: "red",
+    color: "#ef4444",
+    fillColor: "#ef4444",
+    highlights: ["Sparse population", "Poor infrastructure", "Limited access"],
+    paths: [
+      { lat: 42.8860, lng: 20.8800 },
+      { lat: 42.8860, lng: 20.8960 },
+      { lat: 42.8770, lng: 20.8960 },
+      { lat: 42.8770, lng: 20.8800 },
+    ],
+  },
+];
+
 export const BUDGET_MIN = 500;
 export const BUDGET_MAX = 50000;
 export const BUDGET_STEP = 500;
