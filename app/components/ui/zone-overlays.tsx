@@ -1,7 +1,11 @@
 import { useMemo, useCallback, useState } from "react";
 import { Source, Layer } from "react-map-gl/maplibre";
 import { useMap } from "react-map-gl/maplibre";
-import { BUSINESS_ZONES, type BusinessZone } from "~/lib/constants";
+import {
+  BUSINESS_ZONES,
+  generateCirclePolygon,
+  type BusinessZone,
+} from "~/lib/constants";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 
 interface ZoneOverlaysProps {
@@ -9,14 +13,14 @@ interface ZoneOverlaysProps {
 }
 
 /**
- * Renders business-zone polygons as declarative MapLibre layers with neon
- * glow outlines. Supports click and hover interactions.
+ * Renders business-zone circles as declarative MapLibre polygon layers with
+ * neon glow outlines. Supports click and hover interactions.
  */
 export function ZoneOverlays({ onZoneClick }: ZoneOverlaysProps) {
   const { current: map } = useMap();
   const [hoveredZoneId, setHoveredZoneId] = useState<string | null>(null);
 
-  // Convert BUSINESS_ZONES to a GeoJSON FeatureCollection
+  // Convert BUSINESS_ZONES to a GeoJSON FeatureCollection of circle polygons
   const geojson = useMemo(
     () => ({
       type: "FeatureCollection" as const,
@@ -32,13 +36,7 @@ export function ZoneOverlays({ onZoneClick }: ZoneOverlaysProps) {
         },
         geometry: {
           type: "Polygon" as const,
-          coordinates: [
-            // GeoJSON polygons must be closed (first === last) and use [lng, lat]
-            [
-              ...zone.paths.map((p) => [p.lng, p.lat]),
-              [zone.paths[0].lng, zone.paths[0].lat],
-            ],
-          ],
+          coordinates: [generateCirclePolygon(zone.center, zone.radius)],
         },
       })),
     }),

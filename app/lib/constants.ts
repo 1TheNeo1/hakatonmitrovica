@@ -1,9 +1,9 @@
 export const MITROVICA_CENTER = {
-  lat: 42.8833,
-  lng: 20.8667,
+  lat: 42.8965,
+  lng: 20.866,
 };
 
-export const DEFAULT_ZOOM = 14;
+export const DEFAULT_ZOOM = 15;
 
 export type ZoneRating = "green" | "yellow" | "red";
 
@@ -15,129 +15,166 @@ export interface BusinessZone {
   color: string;
   fillColor: string;
   highlights: string[];
-  paths: Array<{ lat: number; lng: number }>;
+  center: { lat: number; lng: number };
+  radius: number; // meters
+}
+
+/**
+ * Generate a circle polygon (array of [lng, lat] coordinate pairs) from a
+ * center point and radius in metres. Uses the haversine-based destination
+ * formula so the circle is geographically accurate at any zoom / pitch.
+ */
+export function generateCirclePolygon(
+  center: { lat: number; lng: number },
+  radiusMeters: number,
+  numPoints = 64,
+): [number, number][] {
+  const coords: [number, number][] = [];
+  const earthRadius = 6371000; // metres
+  const latRad = (center.lat * Math.PI) / 180;
+  const lngRad = (center.lng * Math.PI) / 180;
+  const angularDistance = radiusMeters / earthRadius;
+
+  for (let i = 0; i <= numPoints; i++) {
+    const bearing = (2 * Math.PI * i) / numPoints;
+    const destLat = Math.asin(
+      Math.sin(latRad) * Math.cos(angularDistance) +
+        Math.cos(latRad) * Math.sin(angularDistance) * Math.cos(bearing),
+    );
+    const destLng =
+      lngRad +
+      Math.atan2(
+        Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(latRad),
+        Math.cos(angularDistance) - Math.sin(latRad) * Math.sin(destLat),
+      );
+    coords.push([(destLng * 180) / Math.PI, (destLat * 180) / Math.PI]);
+  }
+  return coords;
 }
 
 export const BUSINESS_ZONES: BusinessZone[] = [
+  // ── GREEN zones (commercial core near the bridge / main square) ──────
   {
-    id: "city-center",
-    name: "City Center – Pedestrian Zone",
-    description: "Highest foot traffic in the city. Prime retail, café, and services location.",
+    id: "north-main-square",
+    name: "North Main Square",
+    description:
+      "Central hub of North Mitrovica with highest foot traffic. Prime location for retail, cafés, and services.",
     rating: "green",
     color: "#22c55e",
     fillColor: "#22c55e",
-    highlights: ["High foot traffic", "Strong purchasing power", "Excellent visibility"],
-    paths: [
-      { lat: 42.8855, lng: 20.8620 },
-      { lat: 42.8855, lng: 20.8710 },
-      { lat: 42.8815, lng: 20.8710 },
-      { lat: 42.8815, lng: 20.8620 },
+    highlights: [
+      "High foot traffic",
+      "Strong purchasing power",
+      "Excellent visibility",
     ],
+    center: { lat: 42.8935, lng: 20.865 },
+    radius: 220,
   },
   {
-    id: "university-quarter",
-    name: "University Quarter",
-    description: "Student-dense area near Mitrovica faculties. Great for tech startups, tutoring, food, and creative services.",
+    id: "bridge-commercial",
+    name: "Bridge Commercial District",
+    description:
+      "Busy commercial strip near the Ibar bridge. Great for restaurants, services, and cross-community businesses.",
     rating: "green",
     color: "#22c55e",
     fillColor: "#22c55e",
-    highlights: ["Large student population", "Low competition", "Tech & education demand"],
-    paths: [
-      { lat: 42.8800, lng: 20.8540 },
-      { lat: 42.8800, lng: 20.8625 },
-      { lat: 42.8755, lng: 20.8625 },
-      { lat: 42.8755, lng: 20.8540 },
-    ],
+    highlights: ["Bridge proximity", "Mixed clientele", "High visibility"],
+    center: { lat: 42.892, lng: 20.871 },
+    radius: 200,
   },
   {
-    id: "main-bazaar",
-    name: "Main Bazaar & Market",
-    description: "Traditional market hub. Ideal for retail, food stalls, wholesale, and mixed businesses.",
+    id: "north-bazaar",
+    name: "North Bazaar & Market",
+    description:
+      "Traditional market area with daily trading activity. Ideal for retail, food stalls, and wholesale.",
     rating: "green",
     color: "#22c55e",
     fillColor: "#22c55e",
-    highlights: ["Daily market activity", "Mixed demographics", "Strong local demand"],
-    paths: [
-      { lat: 42.8835, lng: 20.8710 },
-      { lat: 42.8835, lng: 20.8790 },
-      { lat: 42.8795, lng: 20.8790 },
-      { lat: 42.8795, lng: 20.8710 },
+    highlights: [
+      "Daily market activity",
+      "Mixed demographics",
+      "Strong local demand",
     ],
+    center: { lat: 42.895, lng: 20.858 },
+    radius: 200,
   },
+  // ── YELLOW zones (surrounding transitional areas) ────────────────────
   {
-    id: "south-residential",
-    name: "South Residential-Commercial",
-    description: "Growing mixed-use area with moderate demand. Good for local services, health & wellness, delivery startups.",
+    id: "north-residential-west",
+    name: "Western Residential Quarter",
+    description:
+      "Growing residential area west of center with emerging small businesses and affordable rent.",
     rating: "yellow",
     color: "#eab308",
     fillColor: "#eab308",
-    highlights: ["Growing population", "Underserved market", "Lower rent costs"],
-    paths: [
-      { lat: 42.8755, lng: 20.8580 },
-      { lat: 42.8755, lng: 20.8720 },
-      { lat: 42.8700, lng: 20.8720 },
-      { lat: 42.8700, lng: 20.8580 },
+    highlights: [
+      "Growing population",
+      "Affordable space",
+      "Underserved market",
     ],
+    center: { lat: 42.897, lng: 20.852 },
+    radius: 250,
   },
   {
-    id: "west-corridor",
-    name: "Western Commercial Corridor",
-    description: "Emerging strip along main western road. Suitable for auto services, wholesale, and delivery hubs.",
+    id: "north-residential-east",
+    name: "Eastern Commercial Strip",
+    description:
+      "Mixed commercial-residential corridor east of the center. Road-side visibility and growing traffic.",
     rating: "yellow",
     color: "#eab308",
     fillColor: "#eab308",
-    highlights: ["Road-side visibility", "Growing traffic", "Affordable space"],
-    paths: [
-      { lat: 42.8870, lng: 20.8480 },
-      { lat: 42.8870, lng: 20.8590 },
-      { lat: 42.8800, lng: 20.8590 },
-      { lat: 42.8800, lng: 20.8480 },
+    highlights: [
+      "Road-side visibility",
+      "Growing traffic",
+      "Lower competition",
     ],
+    center: { lat: 42.8955, lng: 20.877 },
+    radius: 230,
   },
   {
-    id: "north-center",
-    name: "North Mitrovica Center",
-    description: "Commercial activity exists but cross-community dynamics add complexity. Niche opportunities for bold entrepreneurs.",
+    id: "north-upper-center",
+    name: "Upper North Center",
+    description:
+      "Northern extension of the commercial core. Niche opportunities in an underserved area.",
     rating: "yellow",
     color: "#eab308",
     fillColor: "#eab308",
-    highlights: ["Underserved niches", "Cross-community potential", "Lower competition"],
-    paths: [
-      { lat: 42.8970, lng: 20.8590 },
-      { lat: 42.8970, lng: 20.8760 },
-      { lat: 42.8900, lng: 20.8760 },
-      { lat: 42.8900, lng: 20.8590 },
+    highlights: [
+      "Underserved niches",
+      "Cross-community potential",
+      "Lower competition",
     ],
+    center: { lat: 42.9005, lng: 20.866 },
+    radius: 250,
   },
+  // ── RED zones (peripheral / industrial) ──────────────────────────────
   {
-    id: "industrial-north",
-    name: "Northern Industrial Zone",
-    description: "Old heavy industrial area with low consumer traffic. Not recommended for retail or services.",
+    id: "industrial-northwest",
+    name: "Northwest Industrial Zone",
+    description:
+      "Old industrial area with low consumer traffic. Not recommended for retail or consumer services.",
     rating: "red",
     color: "#ef4444",
     fillColor: "#ef4444",
-    highlights: ["Low foot traffic", "Industrial land use", "Poor consumer access"],
-    paths: [
-      { lat: 42.9080, lng: 20.8540 },
-      { lat: 42.9080, lng: 20.8760 },
-      { lat: 42.8980, lng: 20.8760 },
-      { lat: 42.8980, lng: 20.8540 },
+    highlights: [
+      "Low foot traffic",
+      "Industrial land use",
+      "Poor consumer access",
     ],
+    center: { lat: 42.904, lng: 20.853 },
+    radius: 270,
   },
   {
-    id: "east-outskirts",
-    name: "Eastern Outskirts",
-    description: "Low-density suburban fringe with minimal infrastructure. Very challenging for most business types.",
+    id: "far-northeast",
+    name: "Northeast Outskirts",
+    description:
+      "Sparse suburban fringe with minimal infrastructure. Very challenging for most business types.",
     rating: "red",
     color: "#ef4444",
     fillColor: "#ef4444",
     highlights: ["Sparse population", "Poor infrastructure", "Limited access"],
-    paths: [
-      { lat: 42.8860, lng: 20.8800 },
-      { lat: 42.8860, lng: 20.8960 },
-      { lat: 42.8770, lng: 20.8960 },
-      { lat: 42.8770, lng: 20.8800 },
-    ],
+    center: { lat: 42.903, lng: 20.878 },
+    radius: 250,
   },
 ];
 
