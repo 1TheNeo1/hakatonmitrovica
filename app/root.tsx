@@ -10,10 +10,14 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 
 import type { Route } from "./+types/root";
 import { Navbar } from "~/components/layout/navbar";
+import { FabApply } from "~/components/layout/fab-apply";
+import { getUserFromRequest } from "~/lib/session.server";
 import "./app.css";
 
-export function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  const user = await getUserFromRequest(request);
   return {
+    user,
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
   };
 }
@@ -52,8 +56,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App({ loaderData }: Route.ComponentProps) {
   return (
     <APIProvider apiKey={loaderData.googleMapsApiKey}>
-      <Navbar />
+      <Navbar user={loaderData.user} />
       <Outlet />
+      <FabApply user={loaderData.user} />
     </APIProvider>
   );
 }

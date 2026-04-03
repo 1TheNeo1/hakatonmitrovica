@@ -4,4 +4,10 @@ export default [
   index("routes/home.tsx"),
   route("discover", "routes/discover.tsx"),
   route("evaluate", "routes/evaluate.tsx"),
+  route("login", "routes/login.tsx"),
+  route("register", "routes/register.tsx"),
+  route("verify", "routes/verify.tsx"),
+  route("logout", "routes/logout.tsx"),
+  route("apply", "routes/apply.tsx"),
+  route("dashboard", "routes/dashboard.tsx"),
 ] satisfies RouteConfig;
