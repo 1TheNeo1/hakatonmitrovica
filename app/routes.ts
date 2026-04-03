@@ -10,4 +10,9 @@ export default [
   route("logout", "routes/logout.tsx"),
   route("apply", "routes/apply.tsx"),
   route("dashboard", "routes/dashboard.tsx"),
+  route("community", "routes/community.tsx"),
+  route("community/new", "routes/community-new.tsx"),
+  route("community/post/:id", "routes/community-post.tsx"),
+  route("community/messages", "routes/community-messages.tsx"),
+  route("community/messages/:userId", "routes/community-thread.tsx"),
 ] satisfies RouteConfig;
