@@ -175,3 +175,49 @@ export interface CompareIdeasResult {
   dimensions: ComparisonDimension[];
   recommendation: string;
 }
+
+// --- Community Hub types ---
+
+export type ForumCategory = "pitanje" | "diskusija" | "resurs" | "objava";
+
+export interface ForumPost {
+  id: string;
+  authorId: string;
+  title: string;
+  content: string;
+  category: ForumCategory;
+  replyCount: number;
+  createdAt: string;
+  updatedAt: string;
+  authorName?: string;
+  authorRole?: string;
+}
+
+export interface ForumReply {
+  id: string;
+  postId: string;
+  authorId: string;
+  content: string;
+  createdAt: string;
+  authorName?: string;
+  authorRole?: string;
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  readAt: string | null;
+  createdAt: string;
+  senderName?: string;
+}
+
+export interface Conversation {
+  otherUserId: string;
+  otherUserName: string;
+  otherUserRole: string;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadCount: number;
+}

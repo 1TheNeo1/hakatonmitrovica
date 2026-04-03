@@ -35,6 +35,12 @@ export function Navbar({ user }: { user: User | null }) {
           {user ? (
             <>
               <NavLink
+                to="/community"
+                active={location.pathname.startsWith("/community")}
+              >
+                Zajednica
+              </NavLink>
+              <NavLink
                 to="/dashboard"
                 active={location.pathname === "/dashboard"}
               >

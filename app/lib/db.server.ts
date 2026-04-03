@@ -73,6 +73,34 @@ db.exec(`
     UNIQUE(investorId, ideaId)
   );
 
+  CREATE TABLE IF NOT EXISTS forum_posts (
+    id TEXT PRIMARY KEY,
+    authorId TEXT NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    category TEXT NOT NULL CHECK(category IN ('pitanje','diskusija','resurs','objava')),
+    replyCount INTEGER NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS forum_replies (
+    id TEXT PRIMARY KEY,
+    postId TEXT NOT NULL REFERENCES forum_posts(id) ON DELETE CASCADE,
+    authorId TEXT NOT NULL REFERENCES users(id),
+    content TEXT NOT NULL,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS messages (
+    id TEXT PRIMARY KEY,
+    senderId TEXT NOT NULL REFERENCES users(id),
+    receiverId TEXT NOT NULL REFERENCES users(id),
+    content TEXT NOT NULL,
+    readAt TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS tutorials (
     id TEXT PRIMARY KEY,
     authorId TEXT NOT NULL REFERENCES users(id),
@@ -321,6 +349,145 @@ export function getStats() {
     pendingIdeas: pending.count,
     fundedIdeas: funded.count,
   };
+}
+
+// --- Forum helpers ---
+
+export function createForumPost(data: {
+  authorId: string;
+  title: string;
+  content: string;
+  category: string;
+}) {
+  const id = crypto.randomUUID();
+  db.prepare(`
+    INSERT INTO forum_posts (id, authorId, title, content, category)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(id, data.authorId, data.title, data.content, data.category);
+  return id;
+}
+
+export function getAllForumPosts() {
+  return db.prepare(`
+    SELECT forum_posts.*, users.name as authorName, users.role as authorRole
+    FROM forum_posts
+    LEFT JOIN users ON forum_posts.authorId = users.id
+    ORDER BY forum_posts.createdAt DESC
+  `).all() as import("./types").ForumPost[];
+}
+
+export function getForumPostById(id: string) {
+  return db.prepare(`
+    SELECT forum_posts.*, users.name as authorName, users.role as authorRole
+    FROM forum_posts
+    LEFT JOIN users ON forum_posts.authorId = users.id
+    WHERE forum_posts.id = ?
+  `).get(id) as import("./types").ForumPost | undefined;
+}
+
+export function getForumReplies(postId: string) {
+  return db.prepare(`
+    SELECT forum_replies.*, users.name as authorName, users.role as authorRole
+    FROM forum_replies
+    LEFT JOIN users ON forum_replies.authorId = users.id
+    WHERE forum_replies.postId = ?
+    ORDER BY forum_replies.createdAt ASC
+  `).all(postId) as import("./types").ForumReply[];
+}
+
+const createForumReplyTx = db.transaction((data: {
+  postId: string;
+  authorId: string;
+  content: string;
+}) => {
+  const id = crypto.randomUUID();
+  db.prepare(`
+    INSERT INTO forum_replies (id, postId, authorId, content)
+    VALUES (?, ?, ?, ?)
+  `).run(id, data.postId, data.authorId, data.content);
+  db.prepare(`
+    UPDATE forum_posts SET replyCount = replyCount + 1, updatedAt = datetime('now') WHERE id = ?
+  `).run(data.postId);
+  return id;
+});
+
+export function createForumReply(data: {
+  postId: string;
+  authorId: string;
+  content: string;
+}) {
+  return createForumReplyTx(data);
+}
+
+export function deleteForumPost(id: string, authorId: string) {
+  db.prepare("DELETE FROM forum_replies WHERE postId = ?").run(id);
+  db.prepare("DELETE FROM forum_posts WHERE id = ? AND authorId = ?").run(id, authorId);
+}
+
+// --- Message helpers ---
+
+export function sendMessage(data: {
+  senderId: string;
+  receiverId: string;
+  content: string;
+}) {
+  const id = crypto.randomUUID();
+  db.prepare(`
+    INSERT INTO messages (id, senderId, receiverId, content)
+    VALUES (?, ?, ?, ?)
+  `).run(id, data.senderId, data.receiverId, data.content);
+  return id;
+}
+
+export function getConversations(userId: string) {
+  return db.prepare(`
+    WITH ranked AS (
+      SELECT *,
+        CASE WHEN senderId = ? THEN receiverId ELSE senderId END as otherUserId,
+        ROW_NUMBER() OVER (
+          PARTITION BY CASE WHEN senderId = ? THEN receiverId ELSE senderId END
+          ORDER BY createdAt DESC
+        ) as rn
+      FROM messages
+      WHERE senderId = ? OR receiverId = ?
+    )
+    SELECT
+      ranked.otherUserId,
+      u.name as otherUserName,
+      u.role as otherUserRole,
+      ranked.content as lastMessage,
+      ranked.createdAt as lastMessageAt,
+      (SELECT COUNT(*) FROM messages m2
+       WHERE m2.senderId = ranked.otherUserId
+       AND m2.receiverId = ? AND m2.readAt IS NULL) as unreadCount
+    FROM ranked
+    JOIN users u ON u.id = ranked.otherUserId
+    WHERE ranked.rn = 1
+    ORDER BY ranked.createdAt DESC
+  `).all(userId, userId, userId, userId, userId) as import("./types").Conversation[];
+}
+
+export function getThread(userId: string, otherUserId: string) {
+  // Mark unread messages from other user as read
+  db.prepare(`
+    UPDATE messages SET readAt = datetime('now')
+    WHERE senderId = ? AND receiverId = ? AND readAt IS NULL
+  `).run(otherUserId, userId);
+
+  return db.prepare(`
+    SELECT messages.*, users.name as senderName
+    FROM messages
+    LEFT JOIN users ON messages.senderId = users.id
+    WHERE (senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?)
+    ORDER BY messages.createdAt ASC
+  `).all(userId, otherUserId, otherUserId, userId) as import("./types").Message[];
+}
+
+export function getUnreadMessageCount(userId: string) {
+  const row = db.prepare(
+    "SELECT COUNT(*) as count FROM messages WHERE receiverId = ? AND readAt IS NULL"
+  ).get(userId) as { count: number };
+  return row.count;
 }
 
 // --- Tutorial helpers ---
