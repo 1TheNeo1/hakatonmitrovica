@@ -18,7 +18,7 @@ export async function sendOtp(email: string, code: string) {
   }
 
   await resend.emails.send({
-    from: "MitroStart <onboarding@resend.dev>",
+    from: "MitroStart <onboarding@mitrostart.com>",
     to: email,
     subject: `Your MitroStart login code: ${code}`,
     html: `
