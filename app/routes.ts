@@ -10,4 +10,7 @@ export default [
   route("logout", "routes/logout.tsx"),
   route("apply", "routes/apply.tsx"),
   route("dashboard", "routes/dashboard.tsx"),
+  route("edukacija", "routes/edukacija.tsx"),
+  route("edukacija/novo", "routes/edukacija-novo.tsx"),
+  route("edukacija/:id", "routes/edukacija-detalj.tsx"),
 ] satisfies RouteConfig;
