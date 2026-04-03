@@ -13,10 +13,12 @@ import {
   BUDGET_STEP,
   BUSINESS_TYPES,
   CATEGORIES,
+  type BusinessZone,
 } from "~/lib/constants";
 import { Button } from "~/components/ui/button";
 import { ScoreRing } from "~/components/ui/score-ring";
 import { CardSkeleton } from "~/components/ui/skeleton";
+import { ZoneOverlays } from "~/components/ui/zone-overlays";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -56,6 +58,12 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
+const ZONE_RATING_LABELS = {
+  green: { label: "High Potential", bg: "bg-green-500/15", text: "text-green-400", border: "border-green-500/30", dot: "bg-green-500" },
+  yellow: { label: "Moderate Potential", bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/30", dot: "bg-amber-500" },
+  red: { label: "Challenging Area", bg: "bg-red-500/15", text: "text-red-400", border: "border-red-500/30", dot: "bg-red-500" },
+} as const;
+
 export default function Discover({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -66,6 +74,8 @@ export default function Discover({ actionData }: Route.ComponentProps) {
   const [budget, setBudget] = useState(5000);
   const [businessType, setBusinessType] = useState("physical");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [activeZone, setActiveZone] = useState<BusinessZone | null>(null);
+  const [showZones, setShowZones] = useState(true);
 
   const result = actionData?.result as DiscoverResult | null;
   const error = actionData?.error as string | null;
@@ -76,6 +86,7 @@ export default function Discover({ actionData }: Route.ComponentProps) {
         lat: e.detail.latLng.lat,
         lng: e.detail.latLng.lng,
       });
+      setActiveZone(null);
     }
   }, []);
 
@@ -84,6 +95,10 @@ export default function Discover({ actionData }: Route.ComponentProps) {
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
   };
+
+  const handleZoneClick = useCallback((zone: BusinessZone) => {
+    setActiveZone(zone);
+  }, []);
 
   return (
     <div className="min-h-screen pt-20 pb-16 px-6">
@@ -102,9 +117,38 @@ export default function Discover({ actionData }: Route.ComponentProps) {
             <span className="text-secondary">Opportunities</span>
           </h1>
           <p className="text-text-secondary text-lg">
-            Click on the map to pick a location, set your budget, and let AI find
-            the best business for that spot
+            Explore color-coded zones to find the best spots, then click anywhere
+            to get an AI-powered analysis
           </p>
+        </motion.div>
+
+        {/* Zone Legend */}
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-3 mb-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <span className="text-xs text-text-secondary uppercase tracking-widest mr-1">Zone Guide:</span>
+          {(["green", "yellow", "red"] as const).map((rating) => {
+            const styles = ZONE_RATING_LABELS[rating];
+            return (
+              <span
+                key={rating}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${styles.bg} ${styles.text} ${styles.border}`}
+              >
+                <span className={`w-2.5 h-2.5 rounded-full ${styles.dot}`} />
+                {styles.label}
+              </span>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setShowZones((v) => !v)}
+            className="ml-2 px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle text-text-secondary hover:bg-white/5 transition-all cursor-pointer"
+          >
+            {showZones ? "Hide Zones" : "Show Zones"}
+          </button>
         </motion.div>
 
         {/* Main Layout */}
@@ -127,6 +171,7 @@ export default function Discover({ actionData }: Route.ComponentProps) {
               className="w-full h-full min-h-[400px]"
               colorScheme="DARK"
             >
+              {showZones && <ZoneOverlays onZoneClick={handleZoneClick} />}
               {selectedLocation && (
                 <AdvancedMarker position={selectedLocation}>
                   <div className="relative">
@@ -138,13 +183,71 @@ export default function Discover({ actionData }: Route.ComponentProps) {
             </Map>
           </motion.div>
 
-          {/* Form Panel */}
+          {/* Right Panel */}
           <motion.div
-            className="lg:col-span-2"
+            className="lg:col-span-2 flex flex-col gap-4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
+            {/* Zone Info Card */}
+            <AnimatePresence mode="wait">
+              {activeZone ? (
+                <motion.div
+                  key={activeZone.id}
+                  className={`glass rounded-2xl p-5 border ${ZONE_RATING_LABELS[activeZone.rating].border}`}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <span
+                        className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-1 ${ZONE_RATING_LABELS[activeZone.rating].text}`}
+                      >
+                        <span className={`w-2 h-2 rounded-full ${ZONE_RATING_LABELS[activeZone.rating].dot}`} />
+                        {ZONE_RATING_LABELS[activeZone.rating].label}
+                      </span>
+                      <h3 className="font-bold text-base">{activeZone.name}</h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveZone(null)}
+                      className="text-text-secondary hover:text-white transition-colors text-lg leading-none cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p className="text-sm text-text-secondary mb-3">{activeZone.description}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeZone.highlights.map((h) => (
+                      <span
+                        key={h}
+                        className={`text-xs px-2 py-0.5 rounded-full ${ZONE_RATING_LABELS[activeZone.rating].bg} ${ZONE_RATING_LABELS[activeZone.rating].text}`}
+                      >
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="zone-hint"
+                  className="glass rounded-2xl p-4 border border-border-subtle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <p className="text-sm text-text-secondary text-center">
+                    <span className="block mb-1 text-base">Click a colored zone</span>
+                    to learn about that area's business potential
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Analyze Form */}
             <Form method="post" className="glass rounded-2xl p-6 space-y-5">
               {/* Hidden location fields */}
               <input
