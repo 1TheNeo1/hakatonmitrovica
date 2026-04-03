@@ -15,4 +15,7 @@ export default [
   route("community/post/:id", "routes/community-post.tsx"),
   route("community/messages", "routes/community-messages.tsx"),
   route("community/messages/:userId", "routes/community-thread.tsx"),
+  route("edukacija", "routes/edukacija.tsx"),
+  route("edukacija/novo", "routes/edukacija-novo.tsx"),
+  route("edukacija/:id", "routes/edukacija-detalj.tsx"),
 ] satisfies RouteConfig;

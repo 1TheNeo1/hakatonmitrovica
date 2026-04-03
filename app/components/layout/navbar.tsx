@@ -28,6 +28,9 @@ export function Navbar({ user }: { user: User | null }) {
           <NavLink to="/evaluate" active={location.pathname === "/evaluate"}>
             Evauliraj ideju
           </NavLink>
+          <NavLink to="/edukacija" active={location.pathname.startsWith("/edukacija")}>
+            Edukacija
+          </NavLink>
 
           {user ? (
             <>

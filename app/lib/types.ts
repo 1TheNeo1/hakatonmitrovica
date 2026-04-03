@@ -2,6 +2,22 @@
 
 export type UserRole = "admin" | "investor" | "applicant";
 export type IdeaStage = "concept" | "prototype" | "early-revenue" | "scaling";
+export type TutorialType = "blog" | "video" | "resource";
+
+export interface Tutorial {
+  id: string;
+  authorId: string;
+  title: string;
+  summary: string;
+  body: string | null;
+  type: TutorialType;
+  category: string;
+  videoUrl: string | null;
+  resourceUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  authorName?: string;
+}
 export type IdeaStatus =
   | "pending"
   | "reviewed"

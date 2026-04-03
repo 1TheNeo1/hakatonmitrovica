@@ -202,3 +202,11 @@ export const IDEA_STATUSES = [
 
 export type IdeaStageId = (typeof IDEA_STAGES)[number]["id"];
 export type IdeaStatusId = (typeof IDEA_STATUSES)[number]["id"];
+
+export const TUTORIAL_TYPES = [
+  { id: "blog", label: "Blog" },
+  { id: "video", label: "Video" },
+  { id: "resource", label: "Resurs" },
+] as const;
+
+export type TutorialTypeId = (typeof TUTORIAL_TYPES)[number]["id"];
