@@ -34,10 +34,23 @@ Respond with a JSON object in this exact format:
       "estimatedBudget": { "min": number, "max": number },
       "viabilityScore": number (1-100),
       "reasoning": "Why this business would succeed at this location",
-      "tips": ["tip 1", "tip 2", "tip 3"]
+      "tips": ["tip 1", "tip 2", "tip 3"],
+      "budgetBreakdown": {
+        "items": [
+          {
+            "category": "Rent & Deposit",
+            "percentage": number,
+            "amount": number,
+            "description": "one-line note"
+          }
+        ],
+        "monthlyRunningCost": number
+      }
     }
   ]
 }
+
+For each suggestion's budgetBreakdown: provide 5-7 items covering categories such as Rent & Deposit, Equipment, Inventory/Stock, Marketing, Staff/Salaries, Working Capital, and Other Setup Costs as appropriate. Percentages must sum to 100. Amounts must be consistent with the estimatedBudget midpoint. monthlyRunningCost is the estimated ongoing monthly operating cost in EUR.
 
 Provide 3-5 business suggestions, sorted by viability score (highest first). Keep budgets realistic for Kosovo. Be specific about the location context.`;
 }
@@ -72,8 +85,21 @@ Respond with a JSON object in this exact format:
   "strengths": ["strength 1", "strength 2", "strength 3"],
   "weaknesses": ["weakness 1", "weakness 2"],
   "recommendations": ["recommendation 1", "recommendation 2", "recommendation 3"],
-  "pivotSuggestions": ["pivot idea 1", "pivot idea 2"]
+  "pivotSuggestions": ["pivot idea 1", "pivot idea 2"],
+  "budgetBreakdown": {
+    "items": [
+      {
+        "category": "Rent & Deposit",
+        "percentage": number,
+        "amount": number,
+        "description": "one-line note"
+      }
+    ],
+    "monthlyRunningCost": number
+  }
 }
+
+For the budgetBreakdown: provide 5-7 items covering categories such as Rent & Deposit, Equipment, Inventory/Stock, Marketing, Staff/Salaries, Working Capital, and Other Setup Costs as appropriate. Percentages must sum to 100. Amounts must reflect how the available budget (${budget} EUR) would be allocated. monthlyRunningCost is the estimated ongoing monthly operating cost in EUR.
 
 Be honest but constructive. If the idea needs work, explain why and offer concrete pivot suggestions. Consider the local market size, purchasing power, cultural factors, and infrastructure.`;
 }

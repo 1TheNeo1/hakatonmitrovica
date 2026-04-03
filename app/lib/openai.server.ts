@@ -39,7 +39,7 @@ export async function analyzeLocation(
     ],
     response_format: { type: "json_object" },
     temperature: 0.7,
-    max_tokens: 2000,
+    max_tokens: 3500,
   });
 
   const content = response.choices[0]?.message?.content;
@@ -64,7 +64,7 @@ export async function evaluateIdea(
     ],
     response_format: { type: "json_object" },
     temperature: 0.7,
-    max_tokens: 2000,
+    max_tokens: 3500,
   });
 
   const content = response.choices[0]?.message?.content;

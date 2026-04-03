@@ -48,6 +48,18 @@ export interface Idea {
 
 // --- AI types ---
 
+export interface BudgetBreakdownItem {
+  category: string;
+  percentage: number;
+  amount: number;
+  description: string;
+}
+
+export interface BudgetBreakdown {
+  items: BudgetBreakdownItem[];
+  monthlyRunningCost: number;
+}
+
 export interface BusinessSuggestion {
   name: string;
   category: string;
@@ -56,6 +68,7 @@ export interface BusinessSuggestion {
   viabilityScore: number;
   reasoning: string;
   tips: string[];
+  budgetBreakdown?: BudgetBreakdown;
 }
 
 export interface AreaAnalysis {
@@ -89,4 +102,5 @@ export interface EvaluateResult {
   weaknesses: string[];
   recommendations: string[];
   pivotSuggestions: string[];
+  budgetBreakdown?: BudgetBreakdown;
 }
