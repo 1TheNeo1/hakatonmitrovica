@@ -7,6 +7,7 @@ import { BUDGET_MIN, BUDGET_MAX, BUDGET_STEP } from "~/lib/constants";
 import { Button } from "~/components/ui/button";
 import { ScoreRing } from "~/components/ui/score-ring";
 import { CardSkeleton, ScoreSkeleton } from "~/components/ui/skeleton";
+import { BudgetBreakdown } from "~/components/ui/budget-breakdown";
 import { useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
@@ -265,6 +266,22 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                   })}
                 </div>
               </div>
+
+              {/* Budget Allocation */}
+              {result.budgetBreakdown && (
+                <motion.div
+                  className="glass rounded-2xl p-6 mb-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.85 }}
+                >
+                  <h3 className="font-bold mb-1">Budget Allocation</h3>
+                  <p className="text-sm text-text-secondary mb-4">
+                    How your €{budget.toLocaleString()} would be distributed
+                  </p>
+                  <BudgetBreakdown breakdown={result.budgetBreakdown} delay={0.9} />
+                </motion.div>
+              )}
 
               {/* Analysis Sections */}
               <div className="grid gap-4">

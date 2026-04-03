@@ -18,6 +18,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { ScoreRing } from "~/components/ui/score-ring";
 import { CardSkeleton } from "~/components/ui/skeleton";
+import { BudgetBreakdown } from "~/components/ui/budget-breakdown";
 import { ZoneOverlays } from "~/components/ui/zone-overlays";
 
 export function meta({}: Route.MetaArgs) {
@@ -547,6 +548,13 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                         ))}
                       </ul>
                     </div>
+
+                    {suggestion.budgetBreakdown && (
+                      <BudgetBreakdown
+                        breakdown={suggestion.budgetBreakdown}
+                        delay={0.5 + i * 0.1}
+                      />
+                    )}
                   </motion.div>
                 ))}
               </div>
