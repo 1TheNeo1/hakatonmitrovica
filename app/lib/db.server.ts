@@ -1,0 +1,288 @@
+import Database from "better-sqlite3";
+import { mkdirSync } from "fs";
+import { dirname } from "path";
+import crypto from "crypto";
+
+const DB_PATH = process.env.DATABASE_PATH || "./data/mitrostart.db";
+mkdirSync(dirname(DB_PATH), { recursive: true });
+
+const db = new Database(DB_PATH);
+
+// Enable WAL mode for better concurrent read performance
+db.pragma("journal_mode = WAL");
+db.pragma("foreign_keys = ON");
+
+// Create tables
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL CHECK(role IN ('admin','investor','applicant')),
+    organization TEXT,
+    investmentFocus TEXT,
+    investmentMin INTEGER,
+    investmentMax INTEGER,
+    bio TEXT,
+    linkedinUrl TEXT,
+    phone TEXT,
+    city TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS otp_codes (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    code TEXT NOT NULL,
+    expiresAt TEXT NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL REFERENCES users(id),
+    expiresAt TEXT NOT NULL,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS ideas (
+    id TEXT PRIMARY KEY,
+    applicantId TEXT NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    category TEXT NOT NULL,
+    fundingNeeded INTEGER NOT NULL,
+    stage TEXT NOT NULL CHECK(stage IN ('concept','prototype','early-revenue','scaling')),
+    targetMarket TEXT NOT NULL,
+    teamSize INTEGER NOT NULL DEFAULT 1,
+    problemSolved TEXT,
+    competitiveAdvantage TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','reviewed','contacted','funded','rejected')),
+    adminNotes TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS investor_interests (
+    id TEXT PRIMARY KEY,
+    investorId TEXT NOT NULL REFERENCES users(id),
+    ideaId TEXT NOT NULL REFERENCES ideas(id),
+    note TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(investorId, ideaId)
+  );
+`);
+
+// Seed admin user if ADMIN_EMAIL is set and no admin exists
+const adminEmail = process.env.ADMIN_EMAIL;
+if (adminEmail) {
+  const existingAdmin = db.prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1").get();
+  if (!existingAdmin) {
+    db.prepare(
+      "INSERT INTO users (id, email, name, role) VALUES (?, ?, ?, 'admin')"
+    ).run(crypto.randomUUID(), adminEmail, "Admin");
+    console.log(`[MitroStart] Admin user seeded with email: ${adminEmail}`);
+  }
+}
+
+// --- User helpers ---
+
+export function getUserByEmail(email: string) {
+  return db.prepare("SELECT * FROM users WHERE email = ?").get(email) as
+    | import("./types").User
+    | undefined;
+}
+
+export function getUserById(id: string) {
+  return db.prepare("SELECT * FROM users WHERE id = ?").get(id) as
+    | import("./types").User
+    | undefined;
+}
+
+export function createUser(data: {
+  email: string;
+  name: string;
+  role: string;
+  organization?: string;
+  investmentFocus?: string;
+  investmentMin?: number;
+  investmentMax?: number;
+  bio?: string;
+  linkedinUrl?: string;
+  phone?: string;
+  city?: string;
+}) {
+  const id = crypto.randomUUID();
+  db.prepare(`
+    INSERT INTO users (id, email, name, role, organization, investmentFocus, investmentMin, investmentMax, bio, linkedinUrl, phone, city)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    data.email,
+    data.name,
+    data.role,
+    data.organization || null,
+    data.investmentFocus || null,
+    data.investmentMin || null,
+    data.investmentMax || null,
+    data.bio || null,
+    data.linkedinUrl || null,
+    data.phone || null,
+    data.city || null
+  );
+  return id;
+}
+
+export function getAllUsers() {
+  return db.prepare("SELECT * FROM users ORDER BY createdAt DESC").all() as import("./types").User[];
+}
+
+// --- OTP helpers ---
+
+export function createOtp(email: string, code: string) {
+  const id = crypto.randomUUID();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  db.prepare(
+    "INSERT INTO otp_codes (id, email, code, expiresAt) VALUES (?, ?, ?, ?)"
+  ).run(id, email, code, expiresAt);
+  return id;
+}
+
+export function verifyOtp(email: string, code: string): boolean {
+  const otp = db
+    .prepare(
+      "SELECT * FROM otp_codes WHERE email = ? AND code = ? AND used = 0 AND expiresAt > datetime('now') ORDER BY createdAt DESC LIMIT 1"
+    )
+    .get(email, code) as { id: string } | undefined;
+
+  if (!otp) return false;
+
+  db.prepare("UPDATE otp_codes SET used = 1 WHERE id = ?").run(otp.id);
+  return true;
+}
+
+// --- Session helpers ---
+
+export function createDbSession(userId: string) {
+  const id = crypto.randomUUID();
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  db.prepare(
+    "INSERT INTO sessions (id, userId, expiresAt) VALUES (?, ?, ?)"
+  ).run(id, userId, expiresAt);
+  return id;
+}
+
+export function getDbSession(sessionId: string) {
+  return db
+    .prepare(
+      "SELECT * FROM sessions WHERE id = ? AND expiresAt > datetime('now')"
+    )
+    .get(sessionId) as { id: string; userId: string } | undefined;
+}
+
+export function deleteDbSession(sessionId: string) {
+  db.prepare("DELETE FROM sessions WHERE id = ?").run(sessionId);
+}
+
+// --- Idea helpers ---
+
+export function createIdea(data: {
+  applicantId: string;
+  title: string;
+  description: string;
+  category: string;
+  fundingNeeded: number;
+  stage: string;
+  targetMarket: string;
+  teamSize: number;
+  problemSolved?: string;
+  competitiveAdvantage?: string;
+}) {
+  const id = crypto.randomUUID();
+  db.prepare(`
+    INSERT INTO ideas (id, applicantId, title, description, category, fundingNeeded, stage, targetMarket, teamSize, problemSolved, competitiveAdvantage)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    data.applicantId,
+    data.title,
+    data.description,
+    data.category,
+    data.fundingNeeded,
+    data.stage,
+    data.targetMarket,
+    data.teamSize,
+    data.problemSolved || null,
+    data.competitiveAdvantage || null
+  );
+  return id;
+}
+
+export function getIdeasByApplicant(applicantId: string) {
+  return db
+    .prepare("SELECT * FROM ideas WHERE applicantId = ? ORDER BY createdAt DESC")
+    .all(applicantId) as import("./types").Idea[];
+}
+
+export function getAllIdeas() {
+  return db
+    .prepare(`
+      SELECT ideas.*, users.name as applicantName, users.email as applicantEmail
+      FROM ideas
+      LEFT JOIN users ON ideas.applicantId = users.id
+      ORDER BY ideas.createdAt DESC
+    `)
+    .all() as import("./types").Idea[];
+}
+
+export function updateIdeaStatus(id: string, status: string) {
+  db.prepare(
+    "UPDATE ideas SET status = ?, updatedAt = datetime('now') WHERE id = ?"
+  ).run(status, id);
+}
+
+// --- Investor interest helpers ---
+
+export function expressInterest(investorId: string, ideaId: string, note?: string) {
+  const id = crypto.randomUUID();
+  db.prepare(
+    "INSERT OR IGNORE INTO investor_interests (id, investorId, ideaId, note) VALUES (?, ?, ?, ?)"
+  ).run(id, investorId, ideaId, note || null);
+}
+
+export function removeInterest(investorId: string, ideaId: string) {
+  db.prepare(
+    "DELETE FROM investor_interests WHERE investorId = ? AND ideaId = ?"
+  ).run(investorId, ideaId);
+}
+
+export function getInvestorInterests(investorId: string) {
+  return db
+    .prepare(
+      "SELECT ideaId FROM investor_interests WHERE investorId = ?"
+    )
+    .all(investorId) as { ideaId: string }[];
+}
+
+export function getIdeaInterestCount(ideaId: string) {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM investor_interests WHERE ideaId = ?")
+    .get(ideaId) as { count: number };
+  return row.count;
+}
+
+export function getStats() {
+  const users = db.prepare("SELECT COUNT(*) as count FROM users").get() as { count: number };
+  const ideas = db.prepare("SELECT COUNT(*) as count FROM ideas").get() as { count: number };
+  const pending = db.prepare("SELECT COUNT(*) as count FROM ideas WHERE status = 'pending'").get() as { count: number };
+  const funded = db.prepare("SELECT COUNT(*) as count FROM ideas WHERE status = 'funded'").get() as { count: number };
+  return {
+    totalUsers: users.count,
+    totalIdeas: ideas.count,
+    pendingIdeas: pending.count,
+    fundedIdeas: funded.count,
+  };
+}
+
+export default db;

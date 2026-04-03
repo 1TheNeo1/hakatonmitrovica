@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, Form } from "react-router";
+import type { User } from "~/lib/types";
 
-export function Navbar() {
+export function Navbar({ user }: { user: User | null }) {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -27,6 +28,29 @@ export function Navbar() {
           <NavLink to="/evaluate" active={location.pathname === "/evaluate"}>
             Evaluate
           </NavLink>
+
+          {user ? (
+            <>
+              <NavLink
+                to="/dashboard"
+                active={location.pathname === "/dashboard"}
+              >
+                Dashboard
+              </NavLink>
+              <Form method="post" action="/logout" className="inline">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all duration-200 cursor-pointer"
+                >
+                  Logout
+                </button>
+              </Form>
+            </>
+          ) : (
+            <NavLink to="/login" active={location.pathname === "/login"}>
+              Login
+            </NavLink>
+          )}
         </div>
       </div>
     </nav>
