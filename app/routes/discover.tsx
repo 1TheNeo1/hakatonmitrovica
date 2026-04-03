@@ -1,17 +1,16 @@
-import { Form, useActionData, useNavigation } from "react-router";
+import { Form, useNavigation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Map, AdvancedMarker, type MapMouseEvent } from "@vis.gl/react-google-maps";
 import { useState, useCallback } from "react";
 import type { Route } from "./+types/discover";
 import { analyzeLocation } from "~/lib/openai.server";
+import { fetchMitrovicaPois } from "~/lib/overpass.server";
 import type { DiscoverResult } from "~/lib/types";
 import {
-  MITROVICA_CENTER,
-  DEFAULT_ZOOM,
   BUDGET_MIN,
   BUDGET_MAX,
   BUDGET_STEP,
   BUSINESS_TYPES,
+  BUSINESS_ZONES,
   CATEGORIES,
   type BusinessZone,
 } from "~/lib/constants";
@@ -19,7 +18,13 @@ import { Button } from "~/components/ui/button";
 import { ScoreRing } from "~/components/ui/score-ring";
 import { CardSkeleton } from "~/components/ui/skeleton";
 import { BudgetBreakdown } from "~/components/ui/budget-breakdown";
-import { ZoneOverlays } from "~/components/ui/zone-overlays";
+import {
+  ZoneOverlays,
+  ZONE_INTERACTIVE_LAYER_IDS,
+} from "~/components/ui/zone-overlays";
+import { CyberpunkMap, Marker } from "~/components/ui/cyberpunk-map";
+import { PoiLayer, PoiCategoryFilter } from "~/components/ui/poi-layer";
+import type { FeatureCollection, Point } from "geojson";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -32,6 +37,20 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+export async function loader() {
+  const [pois] = await Promise.allSettled([fetchMitrovicaPois()]);
+  return {
+    maptilerKey: process.env.MAPTILER_API_KEY || "",
+    pois:
+      pois.status === "fulfilled"
+        ? pois.value
+        : ({
+            type: "FeatureCollection",
+            features: [],
+          } as FeatureCollection<Point>),
+  };
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const lat = Number(formData.get("lat"));
@@ -39,7 +58,9 @@ export async function action({ request }: Route.ActionArgs) {
   const budget = Number(formData.get("budget"));
   const businessType = formData.get("businessType") as string;
   const categoriesRaw = formData.get("categories") as string;
-  const categories = categoriesRaw ? categoriesRaw.split(",").filter(Boolean) : [];
+  const categories = categoriesRaw
+    ? categoriesRaw.split(",").filter(Boolean)
+    : [];
 
   if (!lat || !lng || !budget || !businessType) {
     return {
@@ -49,7 +70,13 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   try {
-    const result = await analyzeLocation(lat, lng, budget, businessType, categories);
+    const result = await analyzeLocation(
+      lat,
+      lng,
+      budget,
+      businessType,
+      categories,
+    );
     return { error: null, result };
   } catch (e) {
     return {
@@ -60,12 +87,33 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 const ZONE_RATING_LABELS = {
-  green: { label: "High Potential", bg: "bg-green-500/15", text: "text-green-400", border: "border-green-500/30", dot: "bg-green-500" },
-  yellow: { label: "Moderate Potential", bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/30", dot: "bg-amber-500" },
-  red: { label: "Challenging Area", bg: "bg-red-500/15", text: "text-red-400", border: "border-red-500/30", dot: "bg-red-500" },
+  green: {
+    label: "High Potential",
+    bg: "bg-green-500/15",
+    text: "text-green-400",
+    border: "border-green-500/30",
+    dot: "bg-green-500",
+  },
+  yellow: {
+    label: "Moderate Potential",
+    bg: "bg-amber-500/15",
+    text: "text-amber-400",
+    border: "border-amber-500/30",
+    dot: "bg-amber-500",
+  },
+  red: {
+    label: "Challenging Area",
+    bg: "bg-red-500/15",
+    text: "text-red-400",
+    border: "border-red-500/30",
+    dot: "bg-red-500",
+  },
 } as const;
 
-export default function Discover({ actionData }: Route.ComponentProps) {
+export default function Discover({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -77,23 +125,45 @@ export default function Discover({ actionData }: Route.ComponentProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [activeZone, setActiveZone] = useState<BusinessZone | null>(null);
   const [showZones, setShowZones] = useState(true);
+  const [showPois, setShowPois] = useState(true);
+  const [activePoiCategories, setActivePoiCategories] = useState<string[]>([]);
 
   const result = actionData?.result as DiscoverResult | null;
   const error = actionData?.error as string | null;
 
-  const handleMapClick = useCallback((e: MapMouseEvent) => {
-    if (e.detail.latLng) {
-      setSelectedLocation({
-        lat: e.detail.latLng.lat,
-        lng: e.detail.latLng.lng,
-      });
+  const handleMapClick = useCallback(
+    (e: {
+      lngLat: { lng: number; lat: number };
+      features?: Record<string, unknown>[];
+    }) => {
+      // Check if a zone was clicked via interactiveLayerIds
+      const zoneFeature = e.features?.find(
+        (f) => (f as any).layer?.id === "zone-fill",
+      );
+      if (zoneFeature) {
+        const id = (zoneFeature as any).properties?.id as string;
+        const zone = BUSINESS_ZONES.find((z: BusinessZone) => z.id === id);
+        if (zone) {
+          setActiveZone(zone);
+          return;
+        }
+      }
+      // Regular map click — set location
+      setSelectedLocation({ lat: e.lngLat.lat, lng: e.lngLat.lng });
       setActiveZone(null);
-    }
+    },
+    [],
+  );
+
+  const togglePoiCategory = useCallback((cat: string) => {
+    setActivePoiCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    );
   }, []);
 
   const toggleCategory = (id: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
     );
   };
 
@@ -114,12 +184,11 @@ export default function Discover({ actionData }: Route.ComponentProps) {
             Discover Mode
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-            Discover{" "}
-            <span className="text-secondary">Opportunities</span>
+            Discover <span className="text-secondary">Opportunities</span>
           </h1>
           <p className="text-text-secondary text-lg">
-            Explore color-coded zones to find the best spots, then click anywhere
-            to get an AI-powered analysis
+            Explore color-coded zones to find the best spots, then click
+            anywhere to get an AI-powered analysis
           </p>
         </motion.div>
 
@@ -130,7 +199,9 @@ export default function Discover({ actionData }: Route.ComponentProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <span className="text-xs text-text-secondary uppercase tracking-widest mr-1">Zone Guide:</span>
+          <span className="text-xs text-text-secondary uppercase tracking-widest mr-1">
+            Zone Guide:
+          </span>
           {(["green", "yellow", "red"] as const).map((rating) => {
             const styles = ZONE_RATING_LABELS[rating];
             return (
@@ -150,7 +221,34 @@ export default function Discover({ actionData }: Route.ComponentProps) {
           >
             {showZones ? "Hide Zones" : "Show Zones"}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowPois((v) => !v)}
+            className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle text-text-secondary hover:bg-white/5 transition-all cursor-pointer"
+          >
+            {showPois ? "Hide POIs" : "Show POIs"}
+          </button>
         </motion.div>
+
+        {/* POI Category Filter */}
+        <AnimatePresence>
+          {showPois && (
+            <motion.div
+              className="mb-6 flex flex-wrap items-center justify-center gap-2"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <span className="text-xs text-text-secondary uppercase tracking-widest mr-1">
+                POIs:
+              </span>
+              <PoiCategoryFilter
+                activeCategories={activePoiCategories}
+                onToggle={togglePoiCategory}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Main Layout */}
         <div className="grid lg:grid-cols-5 gap-6">
@@ -162,26 +260,36 @@ export default function Discover({ actionData }: Route.ComponentProps) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Map
-              defaultCenter={MITROVICA_CENTER}
-              defaultZoom={DEFAULT_ZOOM}
-              gestureHandling="greedy"
-              disableDefaultUI={true}
-              onClick={handleMapClick}
-              mapId="mitrostart-dark"
-              className="w-full h-full min-h-[400px]"
-              colorScheme="DARK"
+            <CyberpunkMap
+              maptilerKey={loaderData.maptilerKey}
+              onMapClick={handleMapClick}
+              className="w-full h-full"
+              minHeight={400}
+              interactiveLayerIds={showZones ? ZONE_INTERACTIVE_LAYER_IDS : []}
             >
               {showZones && <ZoneOverlays onZoneClick={handleZoneClick} />}
+              {showPois && (
+                <PoiLayer
+                  data={loaderData.pois}
+                  visibleCategories={
+                    activePoiCategories.length > 0
+                      ? activePoiCategories
+                      : undefined
+                  }
+                />
+              )}
               {selectedLocation && (
-                <AdvancedMarker position={selectedLocation}>
+                <Marker
+                  longitude={selectedLocation.lng}
+                  latitude={selectedLocation.lat}
+                >
                   <div className="relative">
-                    <div className="w-6 h-6 rounded-full bg-secondary border-2 border-white shadow-lg" />
+                    <div className="w-6 h-6 rounded-full bg-secondary border-2 border-white shadow-lg shadow-secondary/40" />
                     <div className="absolute inset-0 w-6 h-6 rounded-full bg-secondary/50 animate-ping" />
                   </div>
-                </AdvancedMarker>
+                </Marker>
               )}
-            </Map>
+            </CyberpunkMap>
           </motion.div>
 
           {/* Right Panel */}
@@ -207,7 +315,9 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                       <span
                         className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-1 ${ZONE_RATING_LABELS[activeZone.rating].text}`}
                       >
-                        <span className={`w-2 h-2 rounded-full ${ZONE_RATING_LABELS[activeZone.rating].dot}`} />
+                        <span
+                          className={`w-2 h-2 rounded-full ${ZONE_RATING_LABELS[activeZone.rating].dot}`}
+                        />
                         {ZONE_RATING_LABELS[activeZone.rating].label}
                       </span>
                       <h3 className="font-bold text-base">{activeZone.name}</h3>
@@ -220,7 +330,9 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                       ×
                     </button>
                   </div>
-                  <p className="text-sm text-text-secondary mb-3">{activeZone.description}</p>
+                  <p className="text-sm text-text-secondary mb-3">
+                    {activeZone.description}
+                  </p>
                   <div className="flex flex-wrap gap-1.5">
                     {activeZone.highlights.map((h) => (
                       <span
@@ -241,7 +353,9 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                   exit={{ opacity: 0 }}
                 >
                   <p className="text-sm text-text-secondary text-center">
-                    <span className="block mb-1 text-base">Click a colored zone</span>
+                    <span className="block mb-1 text-base">
+                      Click a colored zone
+                    </span>
                     to learn about that area's business potential
                   </p>
                 </motion.div>
@@ -422,8 +536,8 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                       result.areaAnalysis.footTraffic === "high"
                         ? "bg-green-500/15 text-green-400"
                         : result.areaAnalysis.footTraffic === "medium"
-                        ? "bg-amber-500/15 text-amber-400"
-                        : "bg-red-500/15 text-red-400"
+                          ? "bg-amber-500/15 text-amber-400"
+                          : "bg-red-500/15 text-red-400"
                     }`}
                   >
                     Foot Traffic:{" "}
@@ -500,9 +614,7 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-bold text-lg">
-                          {suggestion.name}
-                        </h3>
+                        <h3 className="font-bold text-lg">{suggestion.name}</h3>
                         <span className="text-xs font-medium text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">
                           {suggestion.category}
                         </span>
@@ -540,9 +652,7 @@ export default function Discover({ actionData }: Route.ComponentProps) {
                             key={j}
                             className="text-xs text-text-secondary flex items-start gap-1.5"
                           >
-                            <span className="text-primary mt-0.5">
-                              &#8250;
-                            </span>
+                            <span className="text-primary mt-0.5">&#8250;</span>
                             {tip}
                           </li>
                         ))}

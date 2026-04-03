@@ -6,7 +6,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { APIProvider } from "@vis.gl/react-google-maps";
 
 import type { Route } from "./+types/root";
 import { Navbar } from "~/components/layout/navbar";
@@ -18,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const user = await getUserFromRequest(request);
   return {
     user,
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
+    maptilerKey: process.env.MAPTILER_API_KEY || "",
   };
 }
 
@@ -55,11 +54,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App({ loaderData }: Route.ComponentProps) {
   return (
-    <APIProvider apiKey={loaderData.googleMapsApiKey}>
+    <>
       <Navbar user={loaderData.user} />
       <Outlet />
       <FabApply user={loaderData.user} />
-    </APIProvider>
+    </>
   );
 }
 
