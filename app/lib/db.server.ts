@@ -236,6 +236,30 @@ export function getAllIdeas() {
     .all() as import("./types").Idea[];
 }
 
+export function getIdeaById(id: string) {
+  return db
+    .prepare(`
+      SELECT ideas.*, users.name as applicantName, users.email as applicantEmail
+      FROM ideas
+      LEFT JOIN users ON ideas.applicantId = users.id
+      WHERE ideas.id = ?
+    `)
+    .get(id) as import("./types").Idea | undefined;
+}
+
+export function getIdeasByIds(ids: string[]) {
+  if (ids.length === 0) return [];
+  const placeholders = ids.map(() => "?").join(", ");
+  return db
+    .prepare(`
+      SELECT ideas.*, users.name as applicantName, users.email as applicantEmail
+      FROM ideas
+      LEFT JOIN users ON ideas.applicantId = users.id
+      WHERE ideas.id IN (${placeholders})
+    `)
+    .all(...ids) as import("./types").Idea[];
+}
+
 export function updateIdeaStatus(id: string, status: string) {
   db.prepare(
     "UPDATE ideas SET status = ?, updatedAt = datetime('now') WHERE id = ?"

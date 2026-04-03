@@ -1,6 +1,20 @@
 import OpenAI from "openai";
-import { getDiscoverPrompt, getEvaluatePrompt } from "./prompts.server";
-import type { DiscoverResult, EvaluateResult } from "./types";
+import {
+  getDiscoverPrompt,
+  getEvaluatePrompt,
+  getIdeaInsightPrompt,
+  getRankIdeasPrompt,
+  getCompareIdeasPrompt,
+} from "./prompts.server";
+import type {
+  DiscoverResult,
+  EvaluateResult,
+  IdeaInsightResult,
+  RankIdeasResult,
+  CompareIdeasResult,
+  InvestorProfile,
+  Idea,
+} from "./types";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -71,4 +85,73 @@ export async function evaluateIdea(
   if (!content) throw new Error("No response from AI");
 
   return JSON.parse(content) as EvaluateResult;
+}
+
+export async function analyzeIdeaForInvestor(
+  idea: Idea,
+  profile: InvestorProfile
+): Promise<IdeaInsightResult> {
+  const userPrompt = getIdeaInsightPrompt(idea, profile);
+
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userPrompt },
+    ],
+    response_format: { type: "json_object" },
+    temperature: 0.7,
+    max_tokens: 1500,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No response from AI");
+
+  return JSON.parse(content) as IdeaInsightResult;
+}
+
+export async function rankIdeasForInvestor(
+  ideas: Idea[],
+  profile: InvestorProfile
+): Promise<RankIdeasResult> {
+  const userPrompt = getRankIdeasPrompt(ideas, profile);
+
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userPrompt },
+    ],
+    response_format: { type: "json_object" },
+    temperature: 0.7,
+    max_tokens: 1500,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No response from AI");
+
+  return JSON.parse(content) as RankIdeasResult;
+}
+
+export async function compareIdeasForInvestor(
+  ideas: Idea[],
+  profile: InvestorProfile
+): Promise<CompareIdeasResult> {
+  const userPrompt = getCompareIdeasPrompt(ideas, profile);
+
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userPrompt },
+    ],
+    response_format: { type: "json_object" },
+    temperature: 0.7,
+    max_tokens: 2000,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) throw new Error("No response from AI");
+
+  return JSON.parse(content) as CompareIdeasResult;
 }
