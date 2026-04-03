@@ -6,9 +6,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { APIProvider } from "@vis.gl/react-google-maps";
 
 import type { Route } from "./+types/root";
+import { Navbar } from "~/components/layout/navbar";
 import "./app.css";
+
+export function loader() {
+  return {
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
+  };
+}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,8 +49,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <Outlet />;
+export default function App({ loaderData }: Route.ComponentProps) {
+  return (
+    <APIProvider apiKey={loaderData.googleMapsApiKey}>
+      <Navbar />
+      <Outlet />
+    </APIProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -63,11 +76,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+      <h1 className="text-2xl font-bold">{message}</h1>
+      <p className="text-text-secondary mt-2">{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
+        <pre className="w-full p-4 overflow-x-auto mt-4 glass rounded-xl">
+          <code className="text-sm">{stack}</code>
         </pre>
       )}
     </main>
