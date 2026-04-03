@@ -23,10 +23,10 @@ export function Navbar({ user }: { user: User | null }) {
 
         <div className="flex items-center gap-1">
           <NavLink to="/discover" active={location.pathname === "/discover"}>
-            Discover
+            Analiziraj ideju
           </NavLink>
           <NavLink to="/evaluate" active={location.pathname === "/evaluate"}>
-            Evaluate
+            Evauliraj ideju
           </NavLink>
 
           {user ? (
@@ -35,20 +35,20 @@ export function Navbar({ user }: { user: User | null }) {
                 to="/dashboard"
                 active={location.pathname === "/dashboard"}
               >
-                Dashboard
+                Kontrolna tabla
               </NavLink>
               <Form method="post" action="/logout" className="inline">
                 <button
                   type="submit"
                   className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all duration-200 cursor-pointer"
                 >
-                  Logout
+                  Odjavi se
                 </button>
               </Form>
             </>
           ) : (
             <NavLink to="/login" active={location.pathname === "/login"}>
-              Login
+              Prijavi se
             </NavLink>
           )}
         </div>

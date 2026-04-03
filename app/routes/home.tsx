@@ -4,11 +4,11 @@ import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "MitroStart - Turn Your Ideas Into Real Businesses" },
+    { title: "MitroStart – Pretvorite svoje ideje u pravi biznis" },
     {
       name: "description",
       content:
-        "AI-powered business evaluation platform for young entrepreneurs. Get instant insights on location-based opportunities or validate your startup idea.",
+        "Platforma za procenu biznisa zasnovana na veštačkoj inteligenciji (AI), namenjena mladim preduzetnicima. Dobijte trenutni uvid u prilike na osnovu lokacije ili validirajte svoju startap ideju.",
     },
   ];
 }
@@ -52,7 +52,7 @@ export default function Home() {
           }}
         >
           <span style={{ fontSize: "14px" }}>🏢</span>
-          Associate Mitrovica Startup Hub
+          Partner: Mitrovica Startup Hub
         </motion.div>
 
         {/* Headline */}
@@ -64,7 +64,7 @@ export default function Home() {
           style={{ color: "#1e1b4b" }}
         >
           <motion.span custom={0} variants={fadeUp} className="block">
-            Turn Your Ideas Into
+            Pretvorite svoje ideje
           </motion.span>
           <motion.span
             custom={1}
@@ -77,7 +77,7 @@ export default function Home() {
               backgroundClip: "text",
             }}
           >
-            Real Businesses
+            u pravi biznis
           </motion.span>
         </motion.h1>
 
@@ -89,9 +89,9 @@ export default function Home() {
           className="text-lg max-w-xl mx-auto mb-14"
           style={{ color: "#64748b" }}
         >
-          AI-powered business evaluation platform for young entrepreneurs. Get
-          instant insights on location-based opportunities or validate your
-          startup idea.
+          Platforma za procenu biznisa zasnovana na veštačkoj inteligenciji za
+          mlade preduzetnike. Dobijte trenutni uvid u lokalne prilike ili
+          testirajte svoju startap ideju.
         </motion.p>
 
         {/* Feature Cards */}
@@ -152,16 +152,17 @@ export default function Home() {
                 className="text-base font-bold mb-2"
                 style={{ color: "#1e1b4b" }}
               >
-                Location-Based Business
+                Biznis na osnovu lokacije
               </h3>
               <p className="text-sm mb-4" style={{ color: "#64748b" }}>
-                Tell us your location and budget, and we'll suggest the best
-                local businesses or startups to launch in your area.
+                Recite nam vašu lokaciju i budžet, a mi ćemo vam predložiti
+                najbolje lokalne biznise ili startape koje možete pokrenuti u
+                vašem okruženju.
               </p>
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-5">
-                {["Location Analysis", "Budget Planning", "Google Maps"].map(
+                {["Analiza lokacije", "Planiranje budžeta", "Google mape"].map(
                   (tag) => (
                     <span
                       key={tag}
@@ -173,7 +174,7 @@ export default function Home() {
                     >
                       {tag}
                     </span>
-                  )
+                  ),
                 )}
               </div>
 
@@ -181,7 +182,7 @@ export default function Home() {
                 className="text-sm font-semibold inline-flex items-center gap-1 transition-gap duration-200 group-hover:gap-2"
                 style={{ color: "#4f46e5" }}
               >
-                Start Analysis
+                Započni analizu
                 <span className="transition-transform duration-200 group-hover:translate-x-0.5">
                   →
                 </span>
@@ -235,17 +236,16 @@ export default function Home() {
                 className="text-base font-bold mb-2"
                 style={{ color: "#1e1b4b" }}
               >
-                Evaluate Your Idea
+                Procena vaše ideje
               </h3>
               <p className="text-sm mb-4" style={{ color: "#64748b" }}>
-                Describe your business or startup idea, and get AI-powered
-                evaluation on feasibility, market potential, and success
-                strategies.
+                Opišite vašu poslovnu ili startap ideju i dobijte AI analizu
+                izvodljivosti, tržišnog potencijala i strategija za uspeh.
               </p>
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-5">
-                {["AI Analysis", "Innovativeness", "Feasibility"].map((tag) => (
+                {["AI Analiza", "Inovativnost", "Izvodljivost"].map((tag) => (
                   <span
                     key={tag}
                     className="text-xs px-2.5 py-1 rounded-full font-medium"
@@ -263,7 +263,7 @@ export default function Home() {
                 className="text-sm font-semibold inline-flex items-center gap-1 transition-gap duration-200 group-hover:gap-2"
                 style={{ color: "#4f46e5" }}
               >
-                Evaluate Idea
+                Proceni ideju
                 <span className="transition-transform duration-200 group-hover:translate-x-0.5">
                   →
                 </span>
@@ -282,19 +282,19 @@ export default function Home() {
           {[
             {
               emoji: "⚡",
-              label: "Fast Analysis",
+              label: "Brza analiza",
             },
             {
               emoji: "📊",
-              label: "Market Insights",
+              label: "Tržišni uvid",
             },
             {
               emoji: "📋",
-              label: "Business Planning",
+              label: "Poslovno planiranje",
             },
             {
               emoji: "✨",
-              label: "AI Powered",
+              label: "Pokreće AI",
             },
           ].map((item) => (
             <div
