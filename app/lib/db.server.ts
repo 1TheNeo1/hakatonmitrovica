@@ -72,6 +72,20 @@ db.exec(`
     createdAt TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(investorId, ideaId)
   );
+
+  CREATE TABLE IF NOT EXISTS tutorials (
+    id TEXT PRIMARY KEY,
+    authorId TEXT NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    body TEXT,
+    type TEXT NOT NULL CHECK(type IN ('blog','video','resource')),
+    category TEXT NOT NULL,
+    videoUrl TEXT,
+    resourceUrl TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 // Seed admin user if ADMIN_EMAIL is set and no admin exists
@@ -307,6 +321,62 @@ export function getStats() {
     pendingIdeas: pending.count,
     fundedIdeas: funded.count,
   };
+}
+
+// --- Tutorial helpers ---
+
+export function createTutorial(data: {
+  authorId: string;
+  title: string;
+  summary: string;
+  body?: string;
+  type: string;
+  category: string;
+  videoUrl?: string;
+  resourceUrl?: string;
+}) {
+  const id = crypto.randomUUID();
+  db.prepare(`
+    INSERT INTO tutorials (id, authorId, title, summary, body, type, category, videoUrl, resourceUrl)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    id,
+    data.authorId,
+    data.title,
+    data.summary,
+    data.body || null,
+    data.type,
+    data.category,
+    data.videoUrl || null,
+    data.resourceUrl || null
+  );
+  return id;
+}
+
+export function getAllTutorials() {
+  return db
+    .prepare(`
+      SELECT tutorials.*, users.name as authorName
+      FROM tutorials
+      LEFT JOIN users ON tutorials.authorId = users.id
+      ORDER BY tutorials.createdAt DESC
+    `)
+    .all() as import("./types").Tutorial[];
+}
+
+export function getTutorialById(id: string) {
+  return db
+    .prepare(`
+      SELECT tutorials.*, users.name as authorName
+      FROM tutorials
+      LEFT JOIN users ON tutorials.authorId = users.id
+      WHERE tutorials.id = ?
+    `)
+    .get(id) as import("./types").Tutorial | undefined;
+}
+
+export function deleteTutorial(id: string) {
+  db.prepare("DELETE FROM tutorials WHERE id = ?").run(id);
 }
 
 export default db;
