@@ -1,5 +1,6 @@
 import { Link, useLoaderData } from "react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import type { Route } from "./+types/home";
 import { getStats, getAllIdeas } from "~/lib/db.server";
 import { getUserFromRequest } from "~/lib/session.server";
@@ -79,6 +80,102 @@ const CATEGORY_COLORS: Record<string, string> = {
   health: "#ef4444",
 };
 
+/* ── splash screen ────────────────────────────────────────────────── */
+
+function SplashScreen() {
+  const [clicked, setClicked] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  const [gone, setGone] = useState(false);
+
+  function handleClick() {
+    if (clicked) return;
+    setClicked(true);
+    setTimeout(() => setExiting(true), 700);
+  }
+
+  if (gone) return null;
+
+  return (
+    <AnimatePresence>
+      {!gone && (
+        <motion.div
+          key="splash"
+          onClick={handleClick}
+          initial={{ opacity: 1, y: 0 }}
+          animate={
+            exiting
+              ? {
+                  opacity: 0,
+                  y: "100vh",
+                  transition: { duration: 0.7, ease: "easeInOut" },
+                }
+              : { opacity: 1, y: 0 }
+          }
+          onAnimationComplete={() => {
+            if (exiting) setGone(true);
+          }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            background: "#eeebfa",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: clicked ? "default" : "pointer",
+            userSelect: "none",
+          }}
+        >
+          {/* Logo-only image — always visible */}
+          <img
+            src="/slika2.png"
+            alt="MitroStart logo"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: 1,
+            }}
+          />
+          {/* Logo + text image — fades out on click */}
+          <motion.img
+            src="/slika1.png"
+            alt="MitroStart"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: clicked ? 0 : 1 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+          {/* Click hint */}
+          {!clicked && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+              style={{
+                position: "absolute",
+                bottom: "2.5rem",
+                fontSize: "0.78rem",
+                letterSpacing: "0.08em",
+                color: "rgba(79,70,229,0.55)",
+                fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+              }}
+            >
+              klikni bilo gde
+            </motion.p>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* ───────────────────────────────────────────────────────────────────── */
 
 export default function Home() {
@@ -94,6 +191,7 @@ export default function Home() {
         fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
       }}
     >
+      <SplashScreen />
       {/* ═══════════════════  1 · HERO  ═══════════════════ */}
       <section
         className="relative flex flex-col items-center justify-center px-6 text-center overflow-hidden"
