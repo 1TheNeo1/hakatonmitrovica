@@ -12,10 +12,10 @@ import { useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Evaluate Your Idea - MitroStart" },
+    { title: "Evaluiraj Svoju Ideju - MitroStart" },
     {
       name: "description",
-      content: "Get AI-powered evaluation of your business idea for Kosovska Mitrovica",
+      content: "Dobij AI evaluaciju tvoje poslovne ideje za Kosovsku Mitrovicu",
     },
   ];
 }
@@ -28,14 +28,17 @@ export async function action({ request }: Route.ActionArgs) {
   const locationType = formData.get("locationType") as string;
 
   if (!idea || !audience || !budget || !locationType) {
-    return { error: "Please fill in all fields", result: null };
+    return { error: "Molimo popunite sva polja", result: null };
   }
 
   try {
     const result = await evaluateIdea(idea, audience, budget, locationType);
     return { error: null, result };
   } catch (e) {
-    return { error: "Failed to evaluate idea. Please try again.", result: null };
+    return {
+      error: "Evaluacija nije uspjela. Pokušajte ponovo.",
+      result: null,
+    };
   }
 }
 
@@ -56,14 +59,14 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full glass text-xs font-medium text-tertiary uppercase tracking-widest">
-            Evaluate Mode
+            Mod Evaluacije
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-            Evaluate Your{" "}
-            <span className="text-tertiary">Business Idea</span>
+            Evaluiraj Svoju{" "}
+            <span className="text-tertiary">Poslovnu Ideju</span>
           </h1>
           <p className="text-text-secondary text-lg">
-            Describe your concept and let AI analyze its potential in Mitrovica
+            Opišite vaš koncept i pustite AI da analizira potencijal u Mitrovici
           </p>
         </motion.div>
 
@@ -77,13 +80,13 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
             {/* Business Idea */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                Your Business Idea
+                Vaša Poslovna Ideja
               </label>
               <textarea
                 name="idea"
                 rows={4}
                 required
-                placeholder="Describe your business idea in detail. What product or service will you offer? What problem does it solve?"
+                placeholder="Opišite vašu poslovnu ideju detaljno. Koji proizvod ili uslugu nudite? Koji problem rješava?"
                 className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
               />
             </div>
@@ -91,13 +94,13 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
             {/* Target Audience */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                Target Audience
+                Ciljna Publika
               </label>
               <input
                 type="text"
                 name="audience"
                 required
-                placeholder="e.g., University students aged 18-25, Young professionals, Local families"
+                placeholder="npr. Studenti 18-25 godina, Mladi profesionalci, Lokalne porodice"
                 className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
               />
             </div>
@@ -105,7 +108,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
             {/* Budget Slider */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                Available Budget:{" "}
+                Dostupan budzet:{" "}
                 <span className="text-tertiary font-bold">
                   {budget.toLocaleString()} EUR
                 </span>
@@ -129,18 +132,15 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
             {/* Location Type */}
             <div>
               <label className="block text-sm font-medium mb-3">
-                Location Type
+                Tip Lokacije
               </label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { value: "physical", label: "Physical Location" },
-                  { value: "online", label: "Online / Home-based" },
-                  { value: "both", label: "Both (Physical + Online)" },
+                  { value: "physical", label: "Fizička Lokacija" },
+                  { value: "online", label: "Online / Kućni" },
+                  { value: "both", label: "Oboje (Fizička + Online)" },
                 ].map((opt) => (
-                  <label
-                    key={opt.value}
-                    className="cursor-pointer"
-                  >
+                  <label key={opt.value} className="cursor-pointer">
                     <input
                       type="radio"
                       name="locationType"
@@ -169,7 +169,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
               isLoading={isSubmitting}
               className="w-full bg-tertiary hover:bg-tertiary-light shadow-tertiary/25 hover:shadow-tertiary/40 py-4 text-base"
             >
-              {isSubmitting ? "Analyzing..." : "Evaluate My Idea"}
+              {isSubmitting ? "Analiziranje..." : "Evaluiraj Moju Ideju"}
             </Button>
           </Form>
         </motion.div>
@@ -209,25 +209,26 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                   score={result.overallScore}
                   size={160}
                   strokeWidth={10}
-                  label="Overall Score"
+                  label="Ukupni Rezultat"
                 />
               </div>
 
               {/* Score Breakdown */}
               <div className="glass rounded-2xl p-6 mb-6">
-                <h3 className="font-bold mb-4">Score Breakdown</h3>
+                <h3 className="font-bold mb-4">Pregled Rezultata</h3>
                 <div className="space-y-3">
                   {[
-                    { key: "marketDemand", label: "Market Demand" },
-                    { key: "competition", label: "Competition Edge" },
-                    { key: "budgetFit", label: "Budget Fit" },
-                    { key: "locationFit", label: "Location Fit" },
-                    { key: "scalability", label: "Scalability" },
+                    { key: "marketDemand", label: "Potražnja Tržišta" },
+                    {
+                      key: "competition",
+                      label: "Prednost pred Konkurencijom",
+                    },
+                    { key: "budgetFit", label: "Prilagođenost Budžetu" },
+                    { key: "locationFit", label: "Prilagođenost Lokaciji" },
+                    { key: "scalability", label: "Skalabilnost" },
                   ].map((item, i) => {
                     const score =
-                      result.scores[
-                        item.key as keyof typeof result.scores
-                      ];
+                      result.scores[item.key as keyof typeof result.scores];
                     return (
                       <motion.div
                         key={item.key}
@@ -249,8 +250,8 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                                 score >= 70
                                   ? "#22c55e"
                                   : score >= 40
-                                  ? "#f59e0b"
-                                  : "#ef4444",
+                                    ? "#f59e0b"
+                                    : "#ef4444",
                             }}
                             initial={{ width: 0 }}
                             animate={{ width: `${score}%` }}
@@ -275,24 +276,27 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.85 }}
                 >
-                  <h3 className="font-bold mb-1">Budget Allocation</h3>
+                  <h3 className="font-bold mb-1">Raspodjela Budžeta</h3>
                   <p className="text-sm text-text-secondary mb-4">
-                    How your €{budget.toLocaleString()} would be distributed
+                    Kako bi vaših €{budget.toLocaleString()} bilo raspodijeljeno
                   </p>
-                  <BudgetBreakdown breakdown={result.budgetBreakdown} delay={0.9} />
+                  <BudgetBreakdown
+                    breakdown={result.budgetBreakdown}
+                    delay={0.9}
+                  />
                 </motion.div>
               )}
 
               {/* Analysis Sections */}
               <div className="grid gap-4">
                 <AnalysisCard
-                  title="Market Analysis"
+                  title="Analiza Tržišta"
                   content={result.marketAnalysis}
                   icon="chart"
                   delay={1}
                 />
                 <AnalysisCard
-                  title="Competitor Landscape"
+                  title="Pejzaž Konkurencije"
                   content={result.competitorLandscape}
                   icon="users"
                   delay={1.1}
@@ -309,7 +313,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                     <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs">
                       +
                     </span>
-                    Strengths
+                    Snage
                   </h3>
                   <ul className="space-y-2">
                     {result.strengths.map((s, i) => (
@@ -335,7 +339,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                     <span className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-xs">
                       !
                     </span>
-                    Weaknesses
+                    Slabosti
                   </h3>
                   <ul className="space-y-2">
                     {result.weaknesses.map((w, i) => (
@@ -361,7 +365,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                     <span className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">
                       &#10148;
                     </span>
-                    Recommendations
+                    Preporuke
                   </h3>
                   <ul className="space-y-2">
                     {result.recommendations.map((r, i) => (
@@ -389,7 +393,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                         <span className="w-5 h-5 rounded-full bg-tertiary/20 flex items-center justify-center text-tertiary text-xs">
                           &#8634;
                         </span>
-                        Pivot Ideas
+                        Ideje za Pivot
                       </h3>
                       <ul className="space-y-2">
                         {result.pivotSuggestions.map((p, i) => (

@@ -44,8 +44,8 @@ import type {
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Dashboard - MitroStart" },
-    { name: "description", content: "Your MitroStart dashboard" },
+    { title: "Kontrolna Tabla - MitroStart" },
+    { name: "description", content: "Vaša MitroStart kontrolna tabla" },
   ];
 }
 
@@ -223,17 +223,18 @@ export default function Dashboard({
             {user.role === "admin"
               ? "Admin Panel"
               : user.role === "investor"
-                ? "Investor Dashboard"
-                : "My Ideas"}
+                ? "Investitorska Kontrolna Tabla"
+                : "Moje Ideje"}
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mb-1">
-            Welcome, <span className="animated-gradient-text">{user.name}</span>
+            Dobrodošli,{" "}
+            <span className="animated-gradient-text">{user.name}</span>
           </h1>
           <p className="text-text-secondary">
-            {user.role === "admin" && "Manage ideas and users"}
+            {user.role === "admin" && "Upravljajte idejama i korisnicima"}
             {user.role === "investor" &&
-              "Discover promising ideas to invest in"}
-            {user.role === "applicant" && "Track your submitted ideas"}
+              "Otkrijte obećavajuće ideje za ulaganje"}
+            {user.role === "applicant" && "Pratite vaše prijavljene ideje"}
           </p>
         </motion.div>
 
@@ -243,7 +244,7 @@ export default function Dashboard({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            Your idea was submitted successfully! It will be reviewed soon.
+            Vaša ideja je uspješno prijavljena! Uskoro će biti pregledana.
           </motion.div>
         )}
 
@@ -287,17 +288,21 @@ function AdminDashboard({
         transition={{ delay: 0.1 }}
       >
         <StatCard
-          label="Total Users"
+          label="Ukupno Korisnika"
           value={stats.totalUsers}
           color="primary"
         />
         <StatCard
-          label="Total Ideas"
+          label="Ukupno Ideja"
           value={stats.totalIdeas}
           color="secondary"
         />
-        <StatCard label="Pending" value={stats.pendingIdeas} color="tertiary" />
-        <StatCard label="Funded" value={stats.fundedIdeas} color="green" />
+        <StatCard
+          label="Na Čekanju"
+          value={stats.pendingIdeas}
+          color="tertiary"
+        />
+        <StatCard label="Finansirano" value={stats.fundedIdeas} color="green" />
       </motion.div>
 
       {/* Ideas Table */}
@@ -308,22 +313,28 @@ function AdminDashboard({
         transition={{ delay: 0.2 }}
       >
         <div className="p-5 border-b border-border-subtle">
-          <h2 className="text-lg font-bold">All Ideas</h2>
+          <h2 className="text-lg font-bold">Sve Ideje</h2>
         </div>
         {ideas.length === 0 ? (
           <div className="p-8 text-center text-text-secondary">
-            No ideas submitted yet.
+            Još nema prijavljenih ideja.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border-subtle text-text-secondary">
-                  <th className="text-left px-5 py-3 font-medium">Title</th>
-                  <th className="text-left px-5 py-3 font-medium">Applicant</th>
-                  <th className="text-left px-5 py-3 font-medium">Category</th>
-                  <th className="text-left px-5 py-3 font-medium">Stage</th>
-                  <th className="text-left px-5 py-3 font-medium">Funding</th>
+                  <th className="text-left px-5 py-3 font-medium">Naslov</th>
+                  <th className="text-left px-5 py-3 font-medium">
+                    Podnosilac
+                  </th>
+                  <th className="text-left px-5 py-3 font-medium">
+                    Kategorija
+                  </th>
+                  <th className="text-left px-5 py-3 font-medium">Faza</th>
+                  <th className="text-left px-5 py-3 font-medium">
+                    Finansiranje
+                  </th>
                   <th className="text-left px-5 py-3 font-medium">Status</th>
                 </tr>
               </thead>
@@ -455,7 +466,7 @@ function InvestorDashboard({
             onChange={(e) => setFilterCategory(e.target.value)}
             className="rounded-lg bg-white/60 border border-border-subtle px-3 py-1.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
           >
-            <option value="">All Categories</option>
+            <option value="">Sve Kategorije</option>
             {CATEGORIES.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.label}
@@ -467,7 +478,7 @@ function InvestorDashboard({
             onChange={(e) => setFilterStage(e.target.value)}
             className="rounded-lg bg-white/60 border border-border-subtle px-3 py-1.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
           >
-            <option value="">All Stages</option>
+            <option value="">Sve Faze</option>
             {IDEA_STAGES.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.label}
@@ -487,7 +498,7 @@ function InvestorDashboard({
               : "bg-white/60 border-border-subtle text-text-secondary hover:text-primary hover:border-primary/30"
           }`}
         >
-          {selectionMode ? "Exit Compare Mode" : "Compare Ideas"}
+          {selectionMode ? "Izađi iz Mod Poređenja" : "Poredi Ideje"}
         </button>
       </motion.div>
 
@@ -506,7 +517,7 @@ function InvestorDashboard({
       {/* Idea Cards */}
       {filtered.length === 0 ? (
         <div className="glass rounded-2xl p-8 text-center text-text-secondary">
-          No ideas match your filters.
+          Nema ideja koje odgovaraju vašim filterima.
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -572,13 +583,11 @@ function BestMatchesSection({
     >
       <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-2">
         <span className="text-lg">✨</span>
-        <h2 className="font-bold text-base">Best Matches for You</h2>
-        <span className="text-xs text-text-secondary ml-1">
-          AI-powered recommendations
-        </span>
+        <h2 className="font-bold text-base">Najbolje Podudaranje za Vas</h2>
+        <span className="text-xs text-text-secondary ml-1">AI preporuke</span>
         {isLoading && (
           <span className="ml-auto text-xs text-primary animate-pulse">
-            Analyzing…
+            Analiziranje…
           </span>
         )}
       </div>
@@ -723,7 +732,7 @@ function IdeaCardWithAI({
                   ? "bg-primary border-primary"
                   : "border-border-subtle bg-transparent hover:border-primary/50"
               }`}
-              aria-label={selected ? "Deselect idea" : "Select idea"}
+              aria-label={selected ? "Deselect idea" : "Odaberi ideju"}
             >
               {selected && (
                 <svg viewBox="0 0 10 8" className="w-full h-full p-0.5">
@@ -756,8 +765,8 @@ function IdeaCardWithAI({
 
         <div className="flex items-center justify-between text-xs text-text-secondary mb-4">
           <span>{idea.fundingNeeded.toLocaleString()} EUR</span>
-          <span>Team: {idea.teamSize}</span>
-          <span>{idea.interestCount} interested</span>
+          <span>Tim: {idea.teamSize}</span>
+          <span>{idea.interestCount} zainteresovanih</span>
         </div>
 
         <div className="space-y-2">
@@ -770,7 +779,7 @@ function IdeaCardWithAI({
               variant={interested ? "outline" : "primary"}
               className="w-full text-xs py-2"
             >
-              {interested ? "✓ Interested" : "Express Interest"}
+              {interested ? "✓ Zainteresovan" : "Izrazi Interesovanje"}
             </Button>
           </Form>
 
@@ -806,10 +815,10 @@ function IdeaCardWithAI({
             }`}
           >
             {isAnalyzing
-              ? "Analyzing…"
+              ? "Analiziranje…"
               : insightOpen
-                ? "Hide AI Insight"
-                : "✦ AI Insight"}
+                ? "Sakrij AI Uvid"
+                : "✦ AI Uvid"}
           </button>
         </div>
       </div>
@@ -885,7 +894,7 @@ function AIInsightPanel({
         <div className="flex-1 min-w-0 space-y-3">
           <div>
             <div className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1">
-              Key Benefits
+              Ključne Prednosti
             </div>
             <ul className="space-y-1">
               {insight.keyBenefits.map((b, i) => (
@@ -901,7 +910,7 @@ function AIInsightPanel({
           </div>
           <div>
             <div className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">
-              Risk Factors
+              Faktori Rizika
             </div>
             <ul className="space-y-1">
               {insight.riskFactors.map((r, i) => (
@@ -920,15 +929,15 @@ function AIInsightPanel({
 
       <div className="space-y-2">
         <div className="text-xs text-text-secondary">
-          <span className="font-semibold text-white">Market: </span>
+          <span className="font-semibold text-white">Tržište: </span>
           {insight.marketOpportunity}
         </div>
         <div className="text-xs text-text-secondary">
-          <span className="font-semibold text-white">Return: </span>
+          <span className="font-semibold text-white">Povrat: </span>
           {insight.returnPotential}
         </div>
         <div className="text-xs text-text-secondary">
-          <span className="font-semibold text-white">Fit: </span>
+          <span className="font-semibold text-white">Usklađenost: </span>
           {insight.alignmentNote}
         </div>
       </div>
@@ -963,8 +972,8 @@ function CompareActionBar({
       <div className="flex items-center gap-3 glass rounded-2xl px-5 py-3 shadow-2xl border border-border-subtle">
         <span className="text-sm font-medium">
           {count === 0
-            ? "Select 2–3 ideas to compare"
-            : `${count} idea${count > 1 ? "s" : ""} selected`}
+            ? "Odaberite 2–3 ideje za poređenje"
+            : `${count} ${count === 1 ? "ideja odabrana" : "ideje odabrane"}`}
         </span>
         <button
           onClick={onCompare}
@@ -975,14 +984,14 @@ function CompareActionBar({
               : "bg-primary/10 text-text-secondary cursor-not-allowed"
           }`}
         >
-          {loading ? "Comparing…" : "Compare with AI"}
+          {loading ? "Poređenje…" : "Poredi sa AI"}
         </button>
         {count > 0 && (
           <button
             onClick={onClear}
             className="text-xs text-text-secondary hover:text-primary transition-colors"
           >
-            Clear
+            Obriši
           </button>
         )}
       </div>
@@ -1013,13 +1022,13 @@ function ComparisonPanel({
       <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-lg">⚖️</span>
-          <h2 className="font-bold text-base">AI Comparison</h2>
+          <h2 className="font-bold text-base">AI Poređenje</h2>
         </div>
         <button
           onClick={onClose}
           className="text-text-secondary hover:text-primary transition-colors text-sm"
         >
-          ✕ Close
+          ✕ Zatvori
         </button>
       </div>
 
@@ -1045,7 +1054,7 @@ function ComparisonPanel({
             <span className="text-2xl flex-shrink-0">🏆</span>
             <div>
               <div className="font-bold text-sm text-amber-700 mb-0.5">
-                Recommended Investment
+                Preporučena Investicija
               </div>
               <div className="text-sm text-text-secondary">
                 {result.winnerReason}
@@ -1064,7 +1073,7 @@ function ComparisonPanel({
                 >
                   {isWinner && (
                     <span className="absolute -top-3 text-xs bg-amber-100 text-amber-700 border border-amber-300 rounded-full px-2 py-0.5 font-semibold">
-                      Winner
+                      Pobjednik
                     </span>
                   )}
                   <ScoreRing
@@ -1087,7 +1096,7 @@ function ComparisonPanel({
           {/* Dimension scores */}
           <div className="space-y-3">
             <div className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
-              Head-to-Head
+              Direktno Poređenje
             </div>
             {result.dimensions.map((dim) => (
               <div key={dim.label} className="space-y-1.5">
@@ -1095,7 +1104,7 @@ function ComparisonPanel({
                   <span className="text-xs font-medium">{dim.label}</span>
                   <span className="text-xs text-text-secondary">
                     {result.ideas.find((i) => i.ideaId === dim.winner)?.title}{" "}
-                    wins
+                    pobjeđuje
                   </span>
                 </div>
                 <div className="space-y-1">
@@ -1202,10 +1211,10 @@ function ApplicantDashboard({
           transition={{ delay: 0.1 }}
         >
           <p className="text-text-secondary mb-4">
-            You haven't submitted any ideas yet.
+            Još niste prijavili nijednu ideju.
           </p>
           <Link to="/apply">
-            <Button variant="primary">Submit Your First Idea</Button>
+            <Button variant="primary">Prijavite Vašu Prvu Ideju</Button>
           </Link>
         </motion.div>
       ) : (
@@ -1213,7 +1222,7 @@ function ApplicantDashboard({
           <div className="flex justify-end">
             <Link to="/apply">
               <Button variant="primary" className="text-sm">
-                + Submit Another Idea
+                + Prijavite Još Jednu Ideju
               </Button>
             </Link>
           </div>
@@ -1245,7 +1254,7 @@ function ApplicantDashboard({
                 <div className="flex items-center justify-between text-xs text-text-secondary">
                   <span>{idea.fundingNeeded.toLocaleString()} EUR</span>
                   <span>
-                    Submitted {new Date(idea.createdAt).toLocaleDateString()}
+                    Prijavljeno {new Date(idea.createdAt).toLocaleDateString()}
                   </span>
                 </div>
               </motion.div>
