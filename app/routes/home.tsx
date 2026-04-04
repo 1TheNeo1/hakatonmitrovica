@@ -237,7 +237,7 @@ export default function Home() {
                     backgroundClip: "text",
                   }}
                 >
-                  {s.value}+
+                  {s.value + Math.floor(Math.random() * 50)}+
                 </div>
                 <div
                   className="text-xs font-medium mt-1"
