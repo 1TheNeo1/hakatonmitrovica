@@ -16,10 +16,10 @@ import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Apply for Investment - MitroStart" },
+    { title: "Prijavite se - MitroStart" },
     {
       name: "description",
-      content: "Submit your business idea for investment",
+      content: "Pošaljite svoju poslovnu ideju za investiciju",
     },
   ];
 }
@@ -35,7 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const user = await requireUser(request);
   if (user.role !== "applicant") {
-    return { error: "Only applicants can submit ideas" };
+    return { error: "Samo aplikanti mogu da pošalju ideje" };
   }
 
   const formData = await request.formData();
@@ -59,11 +59,11 @@ export async function action({ request }: Route.ActionArgs) {
     !fundingNeeded ||
     !targetMarket
   ) {
-    return { error: "Please fill in all required fields" };
+    return { error: "Molimo popunite sva obavezna polja" };
   }
 
   if (title.length > 100) {
-    return { error: "Title must be 100 characters or less" };
+    return { error: "Naziv mora biti 100 karaktera ili manje" };
   }
 
   try {
@@ -80,7 +80,7 @@ export async function action({ request }: Route.ActionArgs) {
       competitiveAdvantage,
     });
   } catch (e) {
-    return { error: "Failed to submit idea. Please try again." };
+    return { error: "Slanje ideje nije uspelo. Pokušajte ponovo." };
   }
 
   throw redirect("/dashboard?submitted=true");

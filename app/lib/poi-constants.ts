@@ -17,14 +17,14 @@ export const POI_CATEGORY_COLORS: Record<string, string> = {
 };
 
 export const POI_CATEGORY_LABELS: Record<string, string> = {
-  cafe: "Cafe",
-  restaurant: "Restaurant",
-  shop: "Shop",
-  school: "Education",
-  office: "Office",
-  bank: "Bank",
-  pharmacy: "Pharmacy",
+  cafe: "Kafić",
+  restaurant: "Restoran",
+  shop: "Prodavnica",
+  school: "Edukacija",
+  office: "Kancelarija",
+  bank: "Banka",
+  pharmacy: "Apoteka",
   hotel: "Hotel",
-  healthcare: "Healthcare",
-  entertainment: "Entertainment",
+  healthcare: "Zdravstvena zaštita",
+  entertainment: "Zabava",
 };
