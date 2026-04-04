@@ -90,12 +90,12 @@ export default function Login({ actionData }: Route.ComponentProps) {
               required
               autoFocus
               placeholder="you@example.com"
-              className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+              className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
             />
           </div>
 
           {error && (
-            <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+            <div className="rounded-xl bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}

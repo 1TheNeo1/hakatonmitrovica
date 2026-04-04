@@ -74,7 +74,7 @@ export function Navbar({
               <Form method="post" action="/logout" className="inline">
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all duration-200 cursor-pointer"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-primary/5 transition-all duration-200 cursor-pointer"
                 >
                   Odjavi se
                 </button>
@@ -105,8 +105,8 @@ function NavLink({
       to={to}
       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
         active
-          ? "bg-white/10 text-text-primary"
-          : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+          ? "bg-primary/10 text-text-primary"
+          : "text-text-secondary hover:text-text-primary hover:bg-primary/5"
       }`}
     >
       {children}

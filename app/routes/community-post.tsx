@@ -52,10 +52,10 @@ const categoryLabels: Record<ForumCategory, string> = {
 };
 
 const categoryColors: Record<ForumCategory, string> = {
-  pitanje: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  diskusija: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
-  resurs: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  objava: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  pitanje: "bg-cyan-100 text-cyan-700 border-cyan-300",
+  diskusija: "bg-indigo-100 text-indigo-700 border-indigo-300",
+  resurs: "bg-amber-100 text-amber-700 border-amber-300",
+  objava: "bg-emerald-100 text-emerald-700 border-emerald-300",
 };
 
 const roleLabels: Record<string, string> = {
@@ -128,7 +128,7 @@ export default function CommunityPost({
 
           <div className="flex items-center justify-between pt-4 border-t border-border-subtle">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-indigo-600/30 flex items-center justify-center text-sm font-bold text-indigo-400">
+              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-600">
                 {post.authorName?.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -142,7 +142,7 @@ export default function CommunityPost({
               {post.authorId !== user.id && (
                 <Link
                   to={`/community/messages/${post.authorId}`}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors ml-2"
+                  className="text-xs text-indigo-600 hover:text-indigo-700 transition-colors ml-2"
                 >
                   Pošalji poruku
                 </Link>
@@ -153,7 +153,7 @@ export default function CommunityPost({
                 <input type="hidden" name="intent" value="delete" />
                 <button
                   type="submit"
-                  className="text-xs text-red-400/70 hover:text-red-400 transition-colors cursor-pointer"
+                  className="text-xs text-red-500/70 hover:text-red-600 transition-colors cursor-pointer"
                   onClick={(e) => {
                     if (!confirm("Da li ste sigurni da želite da obrišete ovu objavu?"))
                       e.preventDefault();
@@ -195,7 +195,7 @@ export default function CommunityPost({
                     {reply.content}
                   </p>
                   <div className="flex items-center gap-2 text-xs text-text-muted">
-                    <div className="w-5 h-5 rounded-full bg-indigo-600/20 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+                    <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
                       {reply.authorName?.charAt(0).toUpperCase()}
                     </div>
                     <span className="font-medium text-text-secondary">
@@ -210,7 +210,7 @@ export default function CommunityPost({
                         <span>·</span>
                         <Link
                           to={`/community/messages/${reply.authorId}`}
-                          className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                          className="text-indigo-600 hover:text-indigo-700 transition-colors"
                         >
                           Poruka
                         </Link>
@@ -240,10 +240,10 @@ export default function CommunityPost({
               required
               rows={4}
               placeholder="Vaš odgovor..."
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-border-subtle focus:border-indigo-500/50 focus:outline-none text-text-primary placeholder-text-muted transition-colors resize-none text-sm"
+              className="w-full px-4 py-3 rounded-xl bg-white/70 border border-border-subtle focus:border-indigo-400/50 focus:outline-none text-text-primary placeholder-text-muted transition-colors resize-none text-sm"
             />
             {actionData?.error && (
-              <p className="text-red-400 text-sm">{actionData.error}</p>
+              <p className="text-red-600 text-sm">{actionData.error}</p>
             )}
             <Button variant="primary" type="submit" isLoading={isSubmitting}>
               Odgovori

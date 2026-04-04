@@ -78,7 +78,7 @@ export default function CommunityThread({
           >
             ←
           </Link>
-          <div className="w-10 h-10 rounded-full bg-indigo-600/30 flex items-center justify-center text-sm font-bold text-indigo-400">
+          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-600">
             {otherUser.name.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -111,8 +111,8 @@ export default function CommunityThread({
                   <div
                     className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
                       isSent
-                        ? "bg-indigo-600/30 border border-indigo-500/20 text-text-primary"
-                        : "bg-white/[0.05] border border-border-subtle text-text-secondary"
+                        ? "bg-indigo-100 border border-indigo-200 text-text-primary"
+                        : "bg-white/70 border border-border-subtle text-text-secondary"
                     }`}
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -120,7 +120,7 @@ export default function CommunityThread({
                     </p>
                     <p
                       className={`text-[10px] mt-1 ${
-                        isSent ? "text-indigo-300/50" : "text-text-muted/50"
+                        isSent ? "text-indigo-400/70" : "text-text-muted/50"
                       }`}
                     >
                       {timeAgo(msg.createdAt)}
@@ -150,7 +150,7 @@ export default function CommunityThread({
               required
               placeholder="Napišite poruku..."
               autoComplete="off"
-              className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-border-subtle focus:border-indigo-500/50 focus:outline-none text-text-primary placeholder-text-muted text-sm transition-colors"
+              className="flex-1 px-4 py-3 rounded-xl bg-white/60 border border-border-subtle focus:border-indigo-400/50 focus:outline-none text-text-primary placeholder-text-muted text-sm transition-colors"
             />
             <button
               type="submit"
