@@ -1,24 +1,31 @@
 import crypto from "crypto";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+const gmailUser = process.env.GMAIL_USER;
+const gmailPass = process.env.GMAIL_APP_PASSWORD;
+
+const transporter =
+  gmailUser && gmailPass
+    ? nodemailer.createTransport({
+        service: "gmail",
+        auth: { user: gmailUser, pass: gmailPass },
+      })
+    : null;
 
 export function generateOtp(): string {
   return crypto.randomInt(100000, 999999).toString();
 }
 
 export async function sendOtp(email: string, code: string) {
-  if (!resend) {
+  if (!transporter) {
     console.log(`\n========================================`);
     console.log(`  OTP for ${email}: ${code}`);
     console.log(`========================================\n`);
     return;
   }
 
-  await resend.emails.send({
-    from: "MitroStart <onboarding@mitrostart.com>",
+  await transporter.sendMail({
+    from: `"MitroStart" <${gmailUser}>`,
     to: email,
     subject: `Your MitroStart login code: ${code}`,
     html: `

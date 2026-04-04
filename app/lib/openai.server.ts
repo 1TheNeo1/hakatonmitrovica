@@ -23,7 +23,7 @@ const client = new OpenAI({
 const SYSTEM_PROMPT = `You are a business consultant specializing in Kosovska Mitrovica, Kosovo. You have deep knowledge of the local economy, demographics, and business landscape.
 
 Key facts about Kosovska Mitrovica:
-- Population: ~70,000 in the municipality
+- Population: ~40,000 in the municipality
 - University city (University of Pristina temporary seat) with a large young population
 - Divided city with both Albanian and Serbian communities, creating unique market dynamics
 - Growing entrepreneurship scene supported by EU programs and international organizations
@@ -43,9 +43,15 @@ export async function analyzeLocation(
   lng: number,
   budget: number,
   businessType: string,
-  categories: string[]
+  categories: string[],
 ): Promise<DiscoverResult> {
-  const userPrompt = getDiscoverPrompt(lat, lng, budget, businessType, categories);
+  const userPrompt = getDiscoverPrompt(
+    lat,
+    lng,
+    budget,
+    businessType,
+    categories,
+  );
 
   const response = await client.chat.completions.create({
     model: "gpt-4o-mini",
@@ -68,7 +74,7 @@ export async function evaluateIdea(
   idea: string,
   audience: string,
   budget: number,
-  locationType: string
+  locationType: string,
 ): Promise<EvaluateResult> {
   const userPrompt = getEvaluatePrompt(idea, audience, budget, locationType);
 
@@ -91,7 +97,7 @@ export async function evaluateIdea(
 
 export async function analyzeIdeaForInvestor(
   idea: Idea,
-  profile: InvestorProfile
+  profile: InvestorProfile,
 ): Promise<IdeaInsightResult> {
   const userPrompt = getIdeaInsightPrompt(idea, profile);
 
@@ -114,7 +120,7 @@ export async function analyzeIdeaForInvestor(
 
 export async function rankIdeasForInvestor(
   ideas: Idea[],
-  profile: InvestorProfile
+  profile: InvestorProfile,
 ): Promise<RankIdeasResult> {
   const userPrompt = getRankIdeasPrompt(ideas, profile);
 
@@ -137,7 +143,7 @@ export async function rankIdeasForInvestor(
 
 export async function compareIdeasForInvestor(
   ideas: Idea[],
-  profile: InvestorProfile
+  profile: InvestorProfile,
 ): Promise<CompareIdeasResult> {
   const userPrompt = getCompareIdeasPrompt(ideas, profile);
 
