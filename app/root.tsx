@@ -11,12 +11,15 @@ import type { Route } from "./+types/root";
 import { Navbar } from "~/components/layout/navbar";
 import { FabApply } from "~/components/layout/fab-apply";
 import { getUserFromRequest } from "~/lib/session.server";
+import { getUnreadMessageCount } from "~/lib/db.server";
 import "./app.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getUserFromRequest(request);
+  const unreadMessageCount = user ? getUnreadMessageCount(user.id) : 0;
   return {
     user,
+    unreadMessageCount,
     maptilerKey: process.env.MAPTILER_API_KEY || "",
   };
 }
@@ -55,7 +58,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App({ loaderData }: Route.ComponentProps) {
   return (
     <>
-      <Navbar user={loaderData.user} />
+      <Navbar
+        user={loaderData.user}
+        unreadCount={loaderData.unreadMessageCount}
+      />
       <Outlet />
       <FabApply user={loaderData.user} />
     </>

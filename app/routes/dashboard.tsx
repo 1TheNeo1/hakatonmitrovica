@@ -21,6 +21,7 @@ import {
   getIdeaInterestCount,
   getIdeaById,
   getIdeasByIds,
+  getUnreadMessageCount,
 } from "~/lib/db.server";
 import {
   analyzeIdeaForInvestor,
@@ -85,6 +86,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // applicant
   const myIdeas = getIdeasByApplicant(user.id);
+  const unreadMessageCount = getUnreadMessageCount(user.id);
   return {
     user,
     stats: null,
@@ -92,6 +94,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     users: null,
     myIdeas,
     interests: null,
+    unreadMessageCount,
   } as const;
 }
 
@@ -151,13 +154,21 @@ export async function action({ request }: Route.ActionArgs) {
       const insight = await analyzeIdeaForInvestor(idea, profile);
       return { intent: "analyzeIdea", ideaId, insight };
     } catch {
-      return { intent: "analyzeIdea", ideaId, error: "AI analysis failed. Please try again." };
+      return {
+        intent: "analyzeIdea",
+        ideaId,
+        error: "AI analysis failed. Please try again.",
+      };
     }
   }
 
   if (intent === "rankIdeas" && user.role === "investor") {
     const ideas = getAllIdeas();
-    if (ideas.length === 0) return { intent: "rankIdeas", result: { rankedIdeas: [], summaryNote: "" } };
+    if (ideas.length === 0)
+      return {
+        intent: "rankIdeas",
+        result: { rankedIdeas: [], summaryNote: "" },
+      };
     const profile = buildInvestorProfile(user);
     try {
       const result = await rankIdeasForInvestor(ideas, profile);
@@ -181,7 +192,10 @@ export async function action({ request }: Route.ActionArgs) {
       const result = await compareIdeasForInvestor(ideas, profile);
       return { intent: "compareIdeas", result };
     } catch {
-      return { intent: "compareIdeas", error: "AI comparison failed. Please try again." };
+      return {
+        intent: "compareIdeas",
+        error: "AI comparison failed. Please try again.",
+      };
     }
   }
 
@@ -387,7 +401,10 @@ function InvestorDashboard({
 
   // Store comparison result when it arrives
   useEffect(() => {
-    if (compareFetcher.data?.intent === "compareIdeas" && compareFetcher.data.result) {
+    if (
+      compareFetcher.data?.intent === "compareIdeas" &&
+      compareFetcher.data.result
+    ) {
       setComparisonResult(compareFetcher.data.result);
     }
   }, [compareFetcher.data]);
@@ -404,7 +421,7 @@ function InvestorDashboard({
         ? prev.filter((id) => id !== ideaId)
         : prev.length < 3
           ? [...prev, ideaId]
-          : prev
+          : prev,
     );
   }
 
@@ -413,17 +430,14 @@ function InvestorDashboard({
     setComparisonResult(null);
     compareFetcher.submit(
       { intent: "compareIdeas", ideaIds: selectedIdeas.join(",") },
-      { method: "post" }
+      { method: "post" },
     );
   }
 
   return (
     <div className="space-y-6 pb-24">
       {/* Best Matches Section */}
-      <BestMatchesSection
-        fetcher={rankFetcher}
-        ideas={ideas}
-      />
+      <BestMatchesSection fetcher={rankFetcher} ideas={ideas} />
 
       {/* Filters + Selection Toggle */}
       <motion.div
@@ -433,7 +447,9 @@ function InvestorDashboard({
         transition={{ delay: 0.1 }}
       >
         <div className="flex flex-wrap gap-3 items-center">
-          <span className="text-sm text-text-secondary font-medium">Filter:</span>
+          <span className="text-sm text-text-secondary font-medium">
+            Filter:
+          </span>
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -532,7 +548,13 @@ function BestMatchesSection({
   fetcher,
   ideas,
 }: {
-  fetcher: ReturnType<typeof useFetcher<{ intent: "rankIdeas"; result?: RankIdeasResult; error?: string }>>;
+  fetcher: ReturnType<
+    typeof useFetcher<{
+      intent: "rankIdeas";
+      result?: RankIdeasResult;
+      error?: string;
+    }>
+  >;
   ideas: (Idea & { interestCount: number })[];
 }) {
   const isLoading = fetcher.state !== "idle";
@@ -551,9 +573,13 @@ function BestMatchesSection({
       <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-2">
         <span className="text-lg">✨</span>
         <h2 className="font-bold text-base">Best Matches for You</h2>
-        <span className="text-xs text-text-secondary ml-1">AI-powered recommendations</span>
+        <span className="text-xs text-text-secondary ml-1">
+          AI-powered recommendations
+        </span>
         {isLoading && (
-          <span className="ml-auto text-xs text-primary animate-pulse">Analyzing…</span>
+          <span className="ml-auto text-xs text-primary animate-pulse">
+            Analyzing…
+          </span>
         )}
       </div>
 
@@ -625,7 +651,9 @@ function BestMatchesSection({
             )}
           </>
         ) : fetcher.data?.error ? (
-          <div className="px-5 py-4 text-sm text-red-400">{fetcher.data.error}</div>
+          <div className="px-5 py-4 text-sm text-red-400">
+            {fetcher.data.error}
+          </div>
         ) : null}
       </div>
     </motion.div>
@@ -666,7 +694,7 @@ function IdeaCardWithAI({
     if (!insightFetcher.data) {
       insightFetcher.submit(
         { intent: "analyzeIdea", ideaId: idea.id },
-        { method: "post" }
+        { method: "post" },
       );
     }
   }
@@ -677,7 +705,9 @@ function IdeaCardWithAI({
   return (
     <motion.div
       className={`glass rounded-2xl flex flex-col transition-all ${
-        selected ? "ring-2 ring-primary/60 ring-offset-1 ring-offset-transparent" : ""
+        selected
+          ? "ring-2 ring-primary/60 ring-offset-1 ring-offset-transparent"
+          : ""
       }`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -743,6 +773,29 @@ function IdeaCardWithAI({
               {interested ? "✓ Interested" : "Express Interest"}
             </Button>
           </Form>
+
+          {interested && (
+            <Link
+              to={`/community/messages/${idea.applicantId}`}
+              className="flex items-center justify-center gap-1.5 w-full text-xs py-2 rounded-xl border border-secondary/30 bg-secondary/10 text-secondary hover:bg-secondary/20 hover:border-secondary/50 transition-all font-medium"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              Kontaktiraj osnivača
+            </Link>
+          )}
 
           <button
             onClick={handleAnalyze}
@@ -836,7 +889,10 @@ function AIInsightPanel({
             </div>
             <ul className="space-y-1">
               {insight.keyBenefits.map((b, i) => (
-                <li key={i} className="text-xs text-text-secondary flex gap-1.5">
+                <li
+                  key={i}
+                  className="text-xs text-text-secondary flex gap-1.5"
+                >
                   <span className="text-green-400 flex-shrink-0">✓</span>
                   {b}
                 </li>
@@ -849,7 +905,10 @@ function AIInsightPanel({
             </div>
             <ul className="space-y-1">
               {insight.riskFactors.map((r, i) => (
-                <li key={i} className="text-xs text-text-secondary flex gap-1.5">
+                <li
+                  key={i}
+                  className="text-xs text-text-secondary flex gap-1.5"
+                >
                   <span className="text-red-400 flex-shrink-0">•</span>
                   {r}
                 </li>
@@ -1035,8 +1094,8 @@ function ComparisonPanel({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium">{dim.label}</span>
                   <span className="text-xs text-text-secondary">
-                    {result.ideas.find((i) => i.ideaId === dim.winner)?.title}
-                    {" "}wins
+                    {result.ideas.find((i) => i.ideaId === dim.winner)?.title}{" "}
+                    wins
                   </span>
                 </div>
                 <div className="space-y-1">
@@ -1090,9 +1149,7 @@ function DimensionScoreBar({
       >
         {score}
       </span>
-      {isWinner && (
-        <span className="text-xs">👑</span>
-      )}
+      {isWinner && <span className="text-xs">👑</span>}
     </div>
   );
 }
@@ -1104,12 +1161,39 @@ function ApplicantDashboard({
 }: {
   data: {
     myIdeas: Idea[];
+    unreadMessageCount?: number;
   };
 }) {
-  const { myIdeas } = data;
+  const { myIdeas, unreadMessageCount = 0 } = data;
 
   return (
     <div className="space-y-6">
+      {unreadMessageCount > 0 && (
+        <motion.div
+          className="glass rounded-2xl px-5 py-4 flex items-center justify-between border border-primary/20 bg-primary/5"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary text-sm font-bold">
+              {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+            </span>
+            <p className="text-sm text-text-primary">
+              Imate{" "}
+              <span className="font-semibold text-primary">
+                {unreadMessageCount}
+              </span>{" "}
+              nepročitanih poruka od investitora.
+            </p>
+          </div>
+          <Link
+            to="/community/messages"
+            className="px-4 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/80 transition-colors"
+          >
+            Pogledaj poruke
+          </Link>
+        </motion.div>
+      )}
       {myIdeas.length === 0 ? (
         <motion.div
           className="glass rounded-2xl p-8 text-center"

@@ -1,7 +1,13 @@
 import { Link, useLocation, Form } from "react-router";
 import type { User } from "~/lib/types";
 
-export function Navbar({ user }: { user: User | null }) {
+export function Navbar({
+  user,
+  unreadCount = 0,
+}: {
+  user: User | null;
+  unreadCount?: number;
+}) {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -28,7 +34,10 @@ export function Navbar({ user }: { user: User | null }) {
           <NavLink to="/evaluate" active={location.pathname === "/evaluate"}>
             Evauliraj ideju
           </NavLink>
-          <NavLink to="/edukacija" active={location.pathname.startsWith("/edukacija")}>
+          <NavLink
+            to="/edukacija"
+            active={location.pathname.startsWith("/edukacija")}
+          >
             Edukacija
           </NavLink>
 
@@ -36,9 +45,25 @@ export function Navbar({ user }: { user: User | null }) {
             <>
               <NavLink
                 to="/community"
-                active={location.pathname.startsWith("/community")}
+                active={
+                  location.pathname.startsWith("/community") &&
+                  !location.pathname.startsWith("/community/messages")
+                }
               >
                 Zajednica
+              </NavLink>
+              <NavLink
+                to="/community/messages"
+                active={location.pathname.startsWith("/community/messages")}
+              >
+                <span className="relative inline-flex items-center gap-1">
+                  Poruke
+                  {unreadCount > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold leading-none">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                  )}
+                </span>
               </NavLink>
               <NavLink
                 to="/dashboard"
