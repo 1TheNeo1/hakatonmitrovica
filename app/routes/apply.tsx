@@ -124,7 +124,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
             {/* Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium mb-2">
-                Idea Title <span className="text-red-400">*</span>
+                Idea Title <span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -134,7 +134,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 maxLength={100}
                 autoFocus
                 placeholder="e.g. Mitrovica Student Meal Delivery"
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
               />
             </div>
 
@@ -144,7 +144,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 htmlFor="description"
                 className="block text-sm font-medium mb-2"
               >
-                Description <span className="text-red-400">*</span>
+                Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="description"
@@ -152,14 +152,14 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 required
                 rows={4}
                 placeholder="Describe your business idea in detail..."
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
               />
             </div>
 
             {/* Category */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                Category <span className="text-red-400">*</span>
+                Category <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => (
@@ -173,7 +173,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                       className="peer sr-only"
                       required
                     />
-                    <div className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle text-text-secondary peer-checked:border-primary/50 peer-checked:bg-primary/10 peer-checked:text-primary transition-all hover:bg-white/5">
+                    <div className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle text-text-secondary peer-checked:border-primary/50 peer-checked:bg-primary/10 peer-checked:text-primary transition-all hover:bg-primary/5">
                       {cat.label}
                     </div>
                   </label>
@@ -184,7 +184,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
             {/* Stage */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                Stage <span className="text-red-400">*</span>
+                Stage <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {IDEA_STAGES.map((s) => (
@@ -197,7 +197,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                       onChange={() => setStage(s.id)}
                       className="peer sr-only"
                     />
-                    <div className="px-3 py-2 rounded-xl text-xs font-medium border border-border-subtle text-text-secondary text-center peer-checked:border-secondary/50 peer-checked:bg-secondary/10 peer-checked:text-secondary transition-all hover:bg-white/5">
+                    <div className="px-3 py-2 rounded-xl text-xs font-medium border border-border-subtle text-text-secondary text-center peer-checked:border-secondary/50 peer-checked:bg-secondary/10 peer-checked:text-secondary transition-all hover:bg-primary/5">
                       {s.label}
                     </div>
                   </label>
@@ -221,7 +221,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 step={BUDGET_STEP}
                 value={funding}
                 onChange={(e) => setFunding(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-secondary"
+                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-primary/10 accent-secondary"
               />
               <div className="flex justify-between text-xs text-text-secondary mt-1">
                 <span>{BUDGET_MIN.toLocaleString()}</span>
@@ -235,7 +235,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 htmlFor="targetMarket"
                 className="block text-sm font-medium mb-2"
               >
-                Target Market <span className="text-red-400">*</span>
+                Target Market <span className="text-red-500">*</span>
               </label>
               <input
                 id="targetMarket"
@@ -243,7 +243,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 type="text"
                 required
                 placeholder="e.g. Students in Mitrovica"
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
               />
             </div>
 
@@ -262,7 +262,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 min={1}
                 max={50}
                 defaultValue={1}
-                className="w-32 rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                className="w-32 rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
               />
             </div>
 
@@ -282,7 +282,7 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 name="problemSolved"
                 rows={2}
                 placeholder="What problem does your idea solve?"
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
               />
             </div>
 
@@ -302,12 +302,12 @@ export default function Apply({ actionData }: Route.ComponentProps) {
                 name="competitiveAdvantage"
                 rows={2}
                 placeholder="What makes your idea stand out?"
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
               />
             </div>
 
             {error && (
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+              <div className="rounded-xl bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-600">
                 {error}
               </div>
             )}

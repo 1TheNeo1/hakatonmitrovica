@@ -239,7 +239,7 @@ export default function Dashboard({
 
         {submitted && (
           <motion.div
-            className="mb-6 rounded-xl bg-green-500/10 border border-green-500/20 px-4 py-3 text-sm text-green-400"
+            className="mb-6 rounded-xl bg-green-100 border border-green-300 px-4 py-3 text-sm text-green-700"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -331,7 +331,7 @@ function AdminDashboard({
                 {ideas.map((idea) => (
                   <tr
                     key={idea.id}
-                    className="border-b border-border-subtle hover:bg-white/[0.02] transition-colors"
+                    className="border-b border-border-subtle hover:bg-primary/5 transition-colors"
                   >
                     <td className="px-5 py-3 font-medium">{idea.title}</td>
                     <td className="px-5 py-3 text-text-secondary">
@@ -453,7 +453,7 @@ function InvestorDashboard({
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="rounded-lg bg-white/5 border border-border-subtle px-3 py-1.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
+            className="rounded-lg bg-white/60 border border-border-subtle px-3 py-1.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
           >
             <option value="">All Categories</option>
             {CATEGORIES.map((cat) => (
@@ -465,7 +465,7 @@ function InvestorDashboard({
           <select
             value={filterStage}
             onChange={(e) => setFilterStage(e.target.value)}
-            className="rounded-lg bg-white/5 border border-border-subtle px-3 py-1.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
+            className="rounded-lg bg-white/60 border border-border-subtle px-3 py-1.5 text-sm focus:outline-none focus:border-primary/50 transition-all"
           >
             <option value="">All Stages</option>
             {IDEA_STAGES.map((s) => (
@@ -484,7 +484,7 @@ function InvestorDashboard({
           className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
             selectionMode
               ? "bg-primary/20 border-primary/40 text-primary"
-              : "bg-white/5 border-border-subtle text-text-secondary hover:text-white hover:border-white/20"
+              : "bg-white/60 border-border-subtle text-text-secondary hover:text-primary hover:border-primary/30"
           }`}
         >
           {selectionMode ? "Exit Compare Mode" : "Compare Ideas"}
@@ -602,9 +602,9 @@ function BestMatchesSection({
             {result.rankedIdeas.map((ranked, i) => {
               const idea = ideas.find((id) => id.id === ranked.ideaId);
               const rankColors = [
-                "text-amber-400 bg-amber-400/10 border-amber-400/30",
-                "text-slate-300 bg-slate-300/10 border-slate-300/30",
-                "text-amber-700 bg-amber-700/10 border-amber-700/30",
+                "text-amber-700 bg-amber-100 border-amber-300",
+                "text-slate-500 bg-slate-100 border-slate-300",
+                "text-amber-800 bg-amber-50 border-amber-200",
               ];
               const rankLabels = ["1st", "2nd", "3rd"];
               return (
@@ -645,13 +645,13 @@ function BestMatchesSection({
               );
             })}
             {result.summaryNote && (
-              <div className="px-5 py-3 text-xs text-text-secondary bg-white/[0.02]">
+              <div className="px-5 py-3 text-xs text-text-secondary bg-primary/[0.03]">
                 {result.summaryNote}
               </div>
             )}
           </>
         ) : fetcher.data?.error ? (
-          <div className="px-5 py-4 text-sm text-red-400">
+          <div className="px-5 py-4 text-sm text-red-600">
             {fetcher.data.error}
           </div>
         ) : null}
@@ -802,7 +802,7 @@ function IdeaCardWithAI({
             className={`w-full text-xs py-2 rounded-xl border transition-all font-medium ${
               insightOpen
                 ? "bg-secondary/10 border-secondary/30 text-secondary"
-                : "bg-white/5 border-border-subtle text-text-secondary hover:text-white hover:border-white/20"
+                : "bg-white/60 border-border-subtle text-text-secondary hover:text-primary hover:border-primary/30"
             }`}
           >
             {isAnalyzing
@@ -849,7 +849,7 @@ function AIInsightPanel({
 }) {
   if (error) {
     return (
-      <div className="border-t border-border-subtle px-5 py-4 text-sm text-red-400">
+      <div className="border-t border-border-subtle px-5 py-4 text-sm text-red-600">
         {error}
       </div>
     );
@@ -884,7 +884,7 @@ function AIInsightPanel({
         </div>
         <div className="flex-1 min-w-0 space-y-3">
           <div>
-            <div className="text-xs font-semibold text-green-400 uppercase tracking-wider mb-1">
+            <div className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1">
               Key Benefits
             </div>
             <ul className="space-y-1">
@@ -893,14 +893,14 @@ function AIInsightPanel({
                   key={i}
                   className="text-xs text-text-secondary flex gap-1.5"
                 >
-                  <span className="text-green-400 flex-shrink-0">✓</span>
+                  <span className="text-green-700 flex-shrink-0">✓</span>
                   {b}
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <div className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-1">
+            <div className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">
               Risk Factors
             </div>
             <ul className="space-y-1">
@@ -909,7 +909,7 @@ function AIInsightPanel({
                   key={i}
                   className="text-xs text-text-secondary flex gap-1.5"
                 >
-                  <span className="text-red-400 flex-shrink-0">•</span>
+                  <span className="text-red-600 flex-shrink-0">•</span>
                   {r}
                 </li>
               ))}
@@ -972,7 +972,7 @@ function CompareActionBar({
           className={`text-xs px-4 py-2 rounded-xl font-semibold transition-all ${
             count >= 2 && !loading
               ? "bg-primary text-white hover:bg-primary/80"
-              : "bg-white/10 text-text-secondary cursor-not-allowed"
+              : "bg-primary/10 text-text-secondary cursor-not-allowed"
           }`}
         >
           {loading ? "Comparing…" : "Compare with AI"}
@@ -980,7 +980,7 @@ function CompareActionBar({
         {count > 0 && (
           <button
             onClick={onClear}
-            className="text-xs text-text-secondary hover:text-white transition-colors"
+            className="text-xs text-text-secondary hover:text-primary transition-colors"
           >
             Clear
           </button>
@@ -1017,7 +1017,7 @@ function ComparisonPanel({
         </div>
         <button
           onClick={onClose}
-          className="text-text-secondary hover:text-white transition-colors text-sm"
+          className="text-text-secondary hover:text-primary transition-colors text-sm"
         >
           ✕ Close
         </button>
@@ -1041,10 +1041,10 @@ function ComparisonPanel({
       ) : result ? (
         <div className="p-5 space-y-6">
           {/* Winner callout */}
-          <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 px-4 py-3 flex items-start gap-3">
+          <div className="rounded-xl bg-amber-100 border border-amber-300 px-4 py-3 flex items-start gap-3">
             <span className="text-2xl flex-shrink-0">🏆</span>
             <div>
-              <div className="font-bold text-sm text-amber-400 mb-0.5">
+              <div className="font-bold text-sm text-amber-700 mb-0.5">
                 Recommended Investment
               </div>
               <div className="text-sm text-text-secondary">
@@ -1063,7 +1063,7 @@ function ComparisonPanel({
                   className={`flex flex-col items-center gap-2 ${isWinner ? "relative" : ""}`}
                 >
                   {isWinner && (
-                    <span className="absolute -top-3 text-xs bg-amber-400/20 text-amber-400 border border-amber-400/30 rounded-full px-2 py-0.5 font-semibold">
+                    <span className="absolute -top-3 text-xs bg-amber-100 text-amber-700 border border-amber-300 rounded-full px-2 py-0.5 font-semibold">
                       Winner
                     </span>
                   )}
@@ -1136,9 +1136,9 @@ function DimensionScoreBar({
       <span className="text-xs text-text-secondary w-24 truncate flex-shrink-0">
         {label}
       </span>
-      <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+      <div className="flex-1 h-2 rounded-full bg-primary/10 overflow-hidden">
         <motion.div
-          className={`h-full rounded-full ${isWinner ? "bg-primary" : "bg-white/20"}`}
+          className={`h-full rounded-full ${isWinner ? "bg-primary" : "bg-primary/30"}`}
           initial={{ width: 0 }}
           animate={{ width: `${score}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -1272,7 +1272,7 @@ function StatCard({
     primary: "text-primary",
     secondary: "text-secondary",
     tertiary: "text-tertiary",
-    green: "text-green-400",
+    green: "text-green-700",
   };
 
   return (
@@ -1289,7 +1289,7 @@ function StatusBadge({ status }: { status: string }) {
   const statusDef = IDEA_STATUSES.find((s) => s.id === status);
   return (
     <span
-      className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full border ${statusDef?.color || "text-text-secondary bg-white/5 border-border-subtle"}`}
+      className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full border ${statusDef?.color || "text-text-secondary bg-white/60 border-border-subtle"}`}
     >
       {statusDef?.label || status}
     </span>
@@ -1315,7 +1315,7 @@ function StatusDropdown({
         onChange={(e) => {
           (e.target.closest("form") as HTMLFormElement)?.requestSubmit();
         }}
-        className="rounded-lg bg-white/5 border border-border-subtle px-2 py-1 text-xs focus:outline-none focus:border-primary/50 transition-all cursor-pointer"
+        className="rounded-lg bg-white/60 border border-border-subtle px-2 py-1 text-xs focus:outline-none focus:border-primary/50 transition-all cursor-pointer"
       >
         {IDEA_STATUSES.map((s) => (
           <option key={s.id} value={s.id}>

@@ -143,7 +143,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
               required
               autoFocus
               placeholder="Your full name"
-              className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+              className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
             />
           </div>
 
@@ -158,7 +158,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
               type="email"
               required
               placeholder="you@example.com"
-              className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+              className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
             />
           </div>
 
@@ -176,7 +176,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                     onChange={() => setRole(r)}
                     className="peer sr-only"
                   />
-                  <div className="px-4 py-3 rounded-xl text-sm font-medium border border-border-subtle text-text-secondary text-center peer-checked:border-primary/50 peer-checked:bg-primary/10 peer-checked:text-primary transition-all hover:bg-white/5">
+                  <div className="px-4 py-3 rounded-xl text-sm font-medium border border-border-subtle text-text-secondary text-center peer-checked:border-primary/50 peer-checked:bg-primary/10 peer-checked:text-primary transition-all hover:bg-primary/5">
                     {r === "applicant" ? "🚀 Applicant" : "💼 Investor"}
                   </div>
                 </label>
@@ -208,7 +208,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   name="organization"
                   type="text"
                   placeholder="Your company or fund"
-                  className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                  className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
                 />
               </div>
 
@@ -229,7 +229,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                         selectedFocus.includes(cat.id)
                           ? "border-primary/50 bg-primary/10 text-primary"
-                          : "border-border-subtle text-text-secondary hover:bg-white/5"
+                          : "border-border-subtle text-text-secondary hover:bg-primary/5"
                       }`}
                     >
                       {cat.label}
@@ -264,7 +264,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                     step={BUDGET_STEP}
                     value={investmentMin}
                     onChange={(e) => setInvestmentMin(Number(e.target.value))}
-                    className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-primary"
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer bg-primary/10 accent-primary"
                   />
                 </div>
                 <div>
@@ -282,7 +282,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                     step={BUDGET_STEP}
                     value={investmentMax}
                     onChange={(e) => setInvestmentMax(Number(e.target.value))}
-                    className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-primary"
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer bg-primary/10 accent-primary"
                   />
                 </div>
               </div>
@@ -300,7 +300,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   name="bio"
                   rows={3}
                   placeholder="Tell applicants about yourself..."
-                  className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
+                  className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
                 />
               </div>
 
@@ -320,7 +320,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   name="linkedinUrl"
                   type="url"
                   placeholder="https://linkedin.com/in/..."
-                  className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                  className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
                 />
               </div>
             </motion.div>
@@ -349,7 +349,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   name="phone"
                   type="tel"
                   placeholder="+383 ..."
-                  className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                  className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
                 />
               </div>
               <div>
@@ -364,14 +364,14 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   name="city"
                   type="text"
                   defaultValue="Mitrovica"
-                  className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                  className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
                 />
               </div>
             </motion.div>
           )}
 
           {error && (
-            <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+            <div className="rounded-xl bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}

@@ -13,9 +13,9 @@ const variantClasses: Record<Variant, string> = {
   secondary:
     "bg-secondary hover:bg-secondary-light text-white shadow-lg shadow-secondary/25 hover:shadow-secondary/40",
   ghost:
-    "bg-transparent hover:bg-white/5 text-text-secondary hover:text-text-primary",
+    "bg-transparent hover:bg-primary/5 text-text-secondary hover:text-text-primary",
   outline:
-    "bg-transparent border border-border-subtle hover:border-white/20 text-text-primary hover:bg-white/5",
+    "bg-transparent border border-border-subtle hover:border-primary/30 text-text-primary hover:bg-primary/5",
 };
 
 export function Button({

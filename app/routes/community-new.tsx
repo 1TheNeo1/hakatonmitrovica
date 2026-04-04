@@ -89,8 +89,8 @@ export default function CommunityNew({
                     key={cat.value}
                     className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl cursor-pointer border text-sm font-medium transition-all ${
                       selectedCategory === cat.value
-                        ? "bg-indigo-600/20 border-indigo-500/50 text-indigo-400"
-                        : "bg-white/[0.03] border-border-subtle text-text-secondary hover:border-border-default hover:text-text-primary"
+                        ? "bg-indigo-100 border-indigo-400 text-indigo-700"
+                        : "bg-white/60 border-border-subtle text-text-secondary hover:border-primary/30 hover:text-text-primary"
                     }`}
                   >
                     <input
@@ -122,7 +122,7 @@ export default function CommunityNew({
                 type="text"
                 required
                 placeholder="Npr. Kako pokrenuti biznis u Mitrovici?"
-                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-border-subtle focus:border-indigo-500/50 focus:outline-none text-text-primary placeholder-text-muted transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-white/60 border border-border-subtle focus:border-indigo-400/50 focus:outline-none text-text-primary placeholder-text-muted transition-colors"
               />
             </div>
 
@@ -140,12 +140,12 @@ export default function CommunityNew({
                 required
                 rows={8}
                 placeholder="Opišite detaljno šta želite da podelite ili pitajte..."
-                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-border-subtle focus:border-indigo-500/50 focus:outline-none text-text-primary placeholder-text-muted transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-white/60 border border-border-subtle focus:border-indigo-400/50 focus:outline-none text-text-primary placeholder-text-muted transition-colors resize-none"
               />
             </div>
 
             {actionData?.error && (
-              <p className="text-red-400 text-sm">{actionData.error}</p>
+              <p className="text-red-600 text-sm">{actionData.error}</p>
             )}
 
             <div className="flex items-center gap-3 pt-2">

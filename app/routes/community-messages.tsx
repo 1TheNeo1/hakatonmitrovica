@@ -62,13 +62,13 @@ export default function CommunityMessages({
         >
           <Link
             to="/community"
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent hover:border-border-subtle transition-all"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-primary/5 border border-transparent hover:border-border-subtle transition-all"
           >
             Forum
           </Link>
           <Link
             to="/community/messages"
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/10 text-text-primary border border-border-subtle relative"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary/10 text-text-primary border border-border-subtle relative"
           >
             Poruke
             {unreadCount > 0 && (
@@ -106,14 +106,14 @@ export default function CommunityMessages({
               >
                 <Link
                   to={`/community/messages/${conv.otherUserId}`}
-                  className="flex items-center gap-4 glass rounded-xl p-4 hover:bg-white/[0.04] border border-border-subtle hover:border-border-default transition-all group"
+                  className="flex items-center gap-4 glass rounded-xl p-4 hover:bg-primary/5 border border-border-subtle hover:border-primary/20 transition-all group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-indigo-600/30 flex items-center justify-center text-sm font-bold text-indigo-400 shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-600 shrink-0">
                     {conv.otherUserName.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-text-primary group-hover:text-indigo-400 transition-colors">
+                      <span className="text-sm font-semibold text-text-primary group-hover:text-indigo-600 transition-colors">
                         {conv.otherUserName}
                       </span>
                       <span className="text-xs text-text-muted">

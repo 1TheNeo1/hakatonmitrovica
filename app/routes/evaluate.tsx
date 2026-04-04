@@ -84,7 +84,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                 rows={4}
                 required
                 placeholder="Describe your business idea in detail. What product or service will you offer? What problem does it solve?"
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
               />
             </div>
 
@@ -98,7 +98,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                 name="audience"
                 required
                 placeholder="e.g., University students aged 18-25, Young professionals, Local families"
-                className="w-full rounded-xl bg-white/5 border border-border-subtle px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
               />
             </div>
 
@@ -118,7 +118,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                 step={BUDGET_STEP}
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-tertiary"
+                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-primary/10 accent-tertiary"
               />
               <div className="flex justify-between text-xs text-text-secondary mt-1">
                 <span>{BUDGET_MIN.toLocaleString()} EUR</span>
@@ -149,7 +149,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                       className="peer sr-only"
                       defaultChecked={opt.value === "physical"}
                     />
-                    <div className="px-4 py-2 rounded-xl text-sm font-medium border border-border-subtle text-text-secondary peer-checked:border-tertiary/50 peer-checked:bg-tertiary/10 peer-checked:text-tertiary transition-all hover:bg-white/5">
+                    <div className="px-4 py-2 rounded-xl text-sm font-medium border border-border-subtle text-text-secondary peer-checked:border-tertiary/50 peer-checked:bg-tertiary/10 peer-checked:text-tertiary transition-all hover:bg-primary/5">
                       {opt.label}
                     </div>
                   </label>
@@ -158,7 +158,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
             </div>
 
             {error && (
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+              <div className="rounded-xl bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-600">
                 {error}
               </div>
             )}
@@ -241,7 +241,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                           </span>
                           <span className="font-medium">{score}/100</span>
                         </div>
-                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-2 bg-primary/10 rounded-full overflow-hidden">
                           <motion.div
                             className="h-full rounded-full"
                             style={{
@@ -306,7 +306,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                   transition={{ delay: 1.2 }}
                 >
                   <h3 className="font-bold mb-3 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-xs">
                       +
                     </span>
                     Strengths
@@ -317,7 +317,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                         key={i}
                         className="text-sm text-text-secondary flex items-start gap-2"
                       >
-                        <span className="text-green-400 mt-0.5">&#10003;</span>
+                        <span className="text-green-700 mt-0.5">&#10003;</span>
                         {s}
                       </li>
                     ))}
@@ -332,7 +332,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                   transition={{ delay: 1.3 }}
                 >
                   <h3 className="font-bold mb-3 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-xs">
                       !
                     </span>
                     Weaknesses
@@ -343,7 +343,7 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                         key={i}
                         className="text-sm text-text-secondary flex items-start gap-2"
                       >
-                        <span className="text-amber-400 mt-0.5">&#9888;</span>
+                        <span className="text-amber-700 mt-0.5">&#9888;</span>
                         {w}
                       </li>
                     ))}

@@ -27,10 +27,10 @@ const categoryLabels: Record<ForumCategory, string> = {
 };
 
 const categoryColors: Record<ForumCategory, string> = {
-  pitanje: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  diskusija: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
-  resurs: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  objava: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  pitanje: "bg-cyan-100 text-cyan-700 border-cyan-300",
+  diskusija: "bg-indigo-100 text-indigo-700 border-indigo-300",
+  resurs: "bg-amber-100 text-amber-700 border-amber-300",
+  objava: "bg-emerald-100 text-emerald-700 border-emerald-300",
 };
 
 const roleLabels: Record<string, string> = {
@@ -78,13 +78,13 @@ export default function Community({ loaderData }: Route.ComponentProps) {
         >
           <Link
             to="/community"
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/10 text-text-primary border border-border-subtle"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary/10 text-text-primary border border-border-subtle"
           >
             Forum
           </Link>
           <Link
             to="/community/messages"
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-white/5 border border-transparent hover:border-border-subtle transition-all relative"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-primary/5 border border-transparent hover:border-border-subtle transition-all relative"
           >
             Poruke
             {unreadCount > 0 && (
@@ -135,7 +135,7 @@ export default function Community({ loaderData }: Route.ComponentProps) {
               >
                 <Link
                   to={`/community/post/${post.id}`}
-                  className="block glass rounded-xl p-5 hover:bg-white/[0.04] border border-border-subtle hover:border-border-default transition-all group"
+                  className="block glass rounded-xl p-5 hover:bg-primary/5 border border-border-subtle hover:border-primary/20 transition-all group"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-1 min-w-0">
@@ -151,7 +151,7 @@ export default function Community({ loaderData }: Route.ComponentProps) {
                           {timeAgo(post.createdAt)}
                         </span>
                       </div>
-                      <h3 className="text-base font-semibold text-text-primary group-hover:text-indigo-400 transition-colors truncate">
+                      <h3 className="text-base font-semibold text-text-primary group-hover:text-indigo-600 transition-colors truncate">
                         {post.title}
                       </h3>
                       <p className="text-sm text-text-secondary mt-1 line-clamp-2">

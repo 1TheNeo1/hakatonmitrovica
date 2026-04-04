@@ -86,23 +86,23 @@ export async function action({ request }: Route.ActionArgs) {
 const ZONE_RATING_LABELS = {
   green: {
     label: "Visoki Potencijal",
-    bg: "bg-green-500/15",
-    text: "text-green-400",
-    border: "border-green-500/30",
+    bg: "bg-green-100",
+    text: "text-green-700",
+    border: "border-green-300",
     dot: "bg-green-500",
   },
   yellow: {
     label: "Umjereni Potencijal",
-    bg: "bg-amber-500/15",
-    text: "text-amber-400",
-    border: "border-amber-500/30",
+    bg: "bg-amber-100",
+    text: "text-amber-700",
+    border: "border-amber-300",
     dot: "bg-amber-500",
   },
   red: {
     label: "Izazovno Podrucje",
-    bg: "bg-red-500/15",
-    text: "text-red-400",
-    border: "border-red-500/30",
+    bg: "bg-red-100",
+    text: "text-red-700",
+    border: "border-red-300",
     dot: "bg-red-500",
   },
 } as const;
@@ -246,7 +246,7 @@ export default function Discover({
                 className={`rounded-xl px-4 py-3 text-sm border transition-colors cursor-default ${
                   selectedLocation
                     ? "bg-secondary/5 border-secondary/30 text-secondary"
-                    : "bg-white/5 border-border-subtle text-text-secondary"
+                    : "bg-white/60 border-border-subtle text-text-secondary"
                 }`}
               >
                 {selectedLocation
@@ -264,7 +264,7 @@ export default function Discover({
                 <select
                   value={businessType}
                   onChange={(e) => setBusinessType(e.target.value)}
-                  className="w-full rounded-xl px-4 py-3 text-sm border border-border-subtle bg-white/5 text-text-primary appearance-none cursor-pointer focus:outline-none focus:border-secondary/50 focus:bg-secondary/5 transition-colors pr-10"
+                  className="w-full rounded-xl px-4 py-3 text-sm border border-border-subtle bg-white/60 text-text-primary appearance-none cursor-pointer focus:outline-none focus:border-secondary/50 focus:bg-secondary/5 transition-colors pr-10"
                 >
                   <option value="" disabled className="bg-bg-secondary text-text-primary">
                     Izaberi tip
@@ -307,7 +307,7 @@ export default function Discover({
                     className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                       selectedCategories.includes(cat.id)
                         ? "border-secondary/50 bg-secondary/10 text-secondary"
-                        : "border-border-subtle text-text-secondary hover:bg-white/5"
+                        : "border-border-subtle text-text-secondary hover:bg-primary/5"
                     }`}
                   >
                     {cat.label}
@@ -332,7 +332,7 @@ export default function Discover({
                 step={1000}
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-secondary"
+                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-primary/10 accent-secondary"
               />
               <div className="flex justify-between text-xs text-text-secondary mt-1.5">
                 <span>{"\u20ac"}5,000</span>
@@ -344,7 +344,7 @@ export default function Discover({
             </div>
 
             {error && (
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+              <div className="rounded-xl bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-600">
                 {error ===
                 "Please select a location on the map and fill in all fields"
                   ? "Niste odabrali lokaciju ili popunili sva polja"
@@ -436,7 +436,7 @@ export default function Discover({
                     <button
                       type="button"
                       onClick={() => setActiveZone(null)}
-                      className="text-text-secondary hover:text-white transition-colors text-lg leading-none cursor-pointer ml-2 shrink-0"
+                      className="text-text-secondary hover:text-primary transition-colors text-lg leading-none cursor-pointer ml-2 shrink-0"
                     >
                       x
                     </button>
@@ -467,14 +467,14 @@ export default function Discover({
               <button
                 type="button"
                 onClick={() => setShowZones((v) => !v)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle bg-bg-primary/80 backdrop-blur text-text-secondary hover:bg-white/10 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle bg-white/70 backdrop-blur text-text-secondary hover:bg-primary/10 transition-all cursor-pointer"
               >
                 {showZones ? "Sakrij zone" : "Prikazi zone"}
               </button>
               <button
                 type="button"
                 onClick={() => setShowPois((v) => !v)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle bg-bg-primary/80 backdrop-blur text-text-secondary hover:bg-white/10 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-full text-xs font-medium border border-border-subtle bg-white/70 backdrop-blur text-text-secondary hover:bg-primary/10 transition-all cursor-pointer"
               >
                 {showPois ? "Sakrij POI" : "Prikazi POI"}
               </button>
@@ -552,10 +552,10 @@ export default function Discover({
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${
                     result.areaAnalysis.footTraffic === "high"
-                      ? "bg-green-500/15 text-green-400"
+                      ? "bg-green-100 text-green-700"
                       : result.areaAnalysis.footTraffic === "medium"
-                        ? "bg-amber-500/15 text-amber-400"
-                        : "bg-red-500/15 text-red-400"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-red-100 text-red-700"
                   }`}
                 >
                   Prolaznost: {FOOT_TRAFFIC_SR[result.areaAnalysis.footTraffic]}
@@ -581,7 +581,7 @@ export default function Discover({
               </div>
               <div className="grid md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <h4 className="font-medium mb-2 text-green-400 text-sm">
+                  <h4 className="font-medium mb-2 text-green-700 text-sm">
                     Prednosti
                   </h4>
                   <ul className="space-y-1">
@@ -590,14 +590,14 @@ export default function Discover({
                         key={i}
                         className="text-sm text-text-secondary flex items-start gap-2"
                       >
-                        <span className="text-green-400">&#10003;</span>
+                        <span className="text-green-700">&#10003;</span>
                         {s}
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-2 text-amber-400 text-sm">
+                  <h4 className="font-medium mb-2 text-amber-700 text-sm">
                     Rizici
                   </h4>
                   <ul className="space-y-1">
@@ -606,7 +606,7 @@ export default function Discover({
                         key={i}
                         className="text-sm text-text-secondary flex items-start gap-2"
                       >
-                        <span className="text-amber-400">&#9888;</span>
+                        <span className="text-amber-700">&#9888;</span>
                         {r}
                       </li>
                     ))}
