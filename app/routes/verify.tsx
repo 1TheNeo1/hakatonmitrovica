@@ -15,8 +15,8 @@ import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Verify Code - MitroStart" },
-    { name: "description", content: "Enter your verification code" },
+    { title: "Verifikacija - MitroStart" },
+    { name: "description", content: "Unesite vaš verifikacioni kod" },
   ];
 }
 
@@ -38,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = (formData.get("redirectTo") as string) || "/dashboard";
 
   if (!email) {
-    return { error: "Email is required" };
+    return { error: "Email je obavezan" };
   }
 
   // Resend OTP
@@ -52,17 +52,17 @@ export async function action({ request }: Route.ActionArgs) {
   // Verify OTP
   const code = (formData.get("code") as string)?.trim();
   if (!code || code.length !== 6) {
-    return { error: "Please enter a valid 6-digit code" };
+    return { error: "Molimo unesite ispravan 6-cifreni kod" };
   }
 
   const valid = verifyOtp(email, code);
   if (!valid) {
-    return { error: "Invalid or expired code. Please try again." };
+    return { error: "Nevažeći ili istekli kod. Pokušajte ponovo." };
   }
 
   const user = getUserByEmail(email);
   if (!user) {
-    return { error: "User not found. Please register first." };
+    return { error: "Korisnik nije pronađen. Molimo registrujte se." };
   }
 
   return createUserSession(user.id, redirectTo);
@@ -129,13 +129,13 @@ export default function Verify({
       >
         <div className="text-center mb-8">
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full glass text-xs font-medium text-secondary uppercase tracking-widest">
-            Verification
+            Verifikacija
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-            Check Your Email
+            Proverite email
           </h1>
           <p className="text-text-secondary">
-            We sent a 6-digit code to{" "}
+            Poslali smo 6-cifreni kod na{" "}
             <span className="text-text-primary font-medium">{email}</span>
           </p>
         </div>
@@ -172,7 +172,7 @@ export default function Verify({
 
           {resent && (
             <div className="rounded-xl bg-green-50 border border-green-300 px-4 py-3 text-sm text-green-700">
-              A new code has been sent to your email.
+              Novi kod je poslat na vaš email.
             </div>
           )}
 
@@ -183,7 +183,7 @@ export default function Verify({
             disabled={code.length !== 6}
             className="w-full py-4 text-base"
           >
-            {isSubmitting ? "Verifying..." : "Verify Code"}
+            {isSubmitting ? "Verifikacija..." : "Verifikuj kod"}
           </Button>
 
           {/* Resend button */}
@@ -194,8 +194,8 @@ export default function Verify({
               value="resend"
               className="text-sm text-text-secondary hover:text-primary transition-colors cursor-pointer"
             >
-              Didn't receive a code?{" "}
-              <span className="font-medium text-primary">Resend</span>
+              Niste primili kod?{" "}
+              <span className="font-medium text-primary">Pošalji ponovo</span>
             </button>
           </div>
         </Form>

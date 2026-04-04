@@ -14,8 +14,8 @@ import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Sign In - MitroStart" },
-    { name: "description", content: "Sign in to your MitroStart account" },
+    { title: "Prijava - MitroStart" },
+    { name: "description", content: "Prijavite se na vaš MitroStart nalog" },
   ];
 }
 
@@ -31,13 +31,13 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = (formData.get("redirectTo") as string) || "/dashboard";
 
   if (!email) {
-    return { error: "Email is required" };
+    return { error: "Email je obavezan" };
   }
 
   const user = getUserByEmail(email);
   if (!user) {
     return {
-      error: "No account found with this email. Please register first.",
+      error: "Nije pronađen nalog sa ovim emailom. Molimo registrujte se.",
     };
   }
 
@@ -66,13 +66,13 @@ export default function Login({ actionData }: Route.ComponentProps) {
       >
         <div className="text-center mb-8">
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full glass text-xs font-medium text-secondary uppercase tracking-widest">
-            Sign In
+            Prijava
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-            Welcome Back
+            Dobrodošli nazad
           </h1>
           <p className="text-text-secondary">
-            Enter your email to receive a login code
+            Unesite email da biste primili kod za prijavu
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email Address
+              Email adresa
             </label>
             <input
               id="email"
@@ -89,7 +89,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
               type="email"
               required
               autoFocus
-              placeholder="you@example.com"
+              placeholder="vas@email.com"
               className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
             />
           </div>
@@ -106,16 +106,16 @@ export default function Login({ actionData }: Route.ComponentProps) {
             isLoading={isSubmitting}
             className="w-full py-4 text-base"
           >
-            {isSubmitting ? "Sending Code..." : "Send Login Code"}
+            {isSubmitting ? "Slanje koda..." : "Pošalji kod za prijavu"}
           </Button>
 
           <p className="text-center text-sm text-text-secondary">
-            Don't have an account?{" "}
+            Nemate nalog?{" "}
             <a
               href={`/register?redirect=${encodeURIComponent(redirectTo)}`}
               className="text-primary hover:text-primary-light transition-colors font-medium"
             >
-              Register
+              Registrujte se
             </a>
           </p>
         </Form>

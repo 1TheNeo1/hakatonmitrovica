@@ -22,8 +22,8 @@ import type { UserRole } from "~/lib/types";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Register - MitroStart" },
-    { name: "description", content: "Create your MitroStart account" },
+    { title: "Registracija - MitroStart" },
+    { name: "description", content: "Kreirajte vaš MitroStart nalog" },
   ];
 }
 
@@ -41,17 +41,17 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = (formData.get("redirectTo") as string) || "/dashboard";
 
   if (!email || !name || !role) {
-    return { error: "Name, email, and role are required" };
+    return { error: "Ime, email i uloga su obavezni" };
   }
 
   if (!["investor", "applicant"].includes(role)) {
-    return { error: "Invalid role selected" };
+    return { error: "Izabrana uloga nije validna" };
   }
 
   const existing = getUserByEmail(email);
   if (existing) {
     return {
-      error: "An account with this email already exists. Please sign in.",
+      error: "Nalog sa ovim emailom već postoji. Molimo prijavite se.",
     };
   }
 
@@ -79,7 +79,7 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     createUser(userData);
   } catch (e) {
-    return { error: "Failed to create account. Please try again." };
+    return { error: "Kreiranje naloga nije uspelo. Pokušajte ponovo." };
   }
 
   const code = generateOtp();
@@ -118,13 +118,13 @@ export default function Register({ actionData }: Route.ComponentProps) {
       >
         <div className="text-center mb-8">
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full glass text-xs font-medium text-secondary uppercase tracking-widest">
-            Create Account
+            Kreirajte nalog
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-            Join MitroStart
+            Pridružite se MitroStart-u
           </h1>
           <p className="text-text-secondary">
-            Sign up to apply for investment or browse ideas
+            Registrujte se da biste aplicirali za investiciju ili pregledali ideje
           </p>
         </div>
 
@@ -134,7 +134,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
           {/* Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium mb-2">
-              Full Name
+              Puno ime
             </label>
             <input
               id="name"
@@ -142,7 +142,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
               type="text"
               required
               autoFocus
-              placeholder="Your full name"
+              placeholder="Vaše puno ime"
               className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
             />
           </div>
@@ -150,21 +150,21 @@ export default function Register({ actionData }: Route.ComponentProps) {
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email Address
+              Email adresa
             </label>
             <input
               id="email"
               name="email"
               type="email"
               required
-              placeholder="you@example.com"
+              placeholder="vas@email.com"
               className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
             />
           </div>
 
           {/* Role Picker */}
           <div>
-            <label className="block text-sm font-medium mb-2">I am a...</label>
+            <label className="block text-sm font-medium mb-2">Ja sam...</label>
             <div className="grid grid-cols-2 gap-2">
               {(["applicant", "investor"] as const).map((r) => (
                 <label key={r} className="cursor-pointer">
@@ -177,7 +177,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                     className="peer sr-only"
                   />
                   <div className="px-4 py-3 rounded-xl text-sm font-medium border border-border-subtle text-text-secondary text-center peer-checked:border-primary/50 peer-checked:bg-primary/10 peer-checked:text-primary transition-all hover:bg-primary/5">
-                    {r === "applicant" ? "🚀 Applicant" : "💼 Investor"}
+                    {r === "applicant" ? "🚀 Aplikan" : "💼 Investitor"}
                   </div>
                 </label>
               ))}
@@ -198,16 +198,16 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   htmlFor="organization"
                   className="block text-sm font-medium mb-2"
                 >
-                  Organization{" "}
+                  Organizacija{" "}
                   <span className="text-text-secondary font-normal">
-                    (optional)
+                    (opciono)
                   </span>
                 </label>
                 <input
                   id="organization"
                   name="organization"
                   type="text"
-                  placeholder="Your company or fund"
+                  placeholder="Vaša kompanija ili fond"
                   className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
                 />
               </div>
@@ -215,9 +215,9 @@ export default function Register({ actionData }: Route.ComponentProps) {
               {/* Investment Focus */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Investment Focus{" "}
+                  Oblast investiranja{" "}
                   <span className="text-text-secondary font-normal">
-                    (optional)
+                    (opciono)
                   </span>
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -251,7 +251,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Min Investment:{" "}
+                    Min. investicija:{" "}
                     <span className="text-primary font-bold">
                       {investmentMin.toLocaleString()} EUR
                     </span>
@@ -269,7 +269,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Max Investment:{" "}
+                    Maks. investicija:{" "}
                     <span className="text-primary font-bold">
                       {investmentMax.toLocaleString()} EUR
                     </span>
@@ -290,16 +290,16 @@ export default function Register({ actionData }: Route.ComponentProps) {
               {/* Bio */}
               <div>
                 <label htmlFor="bio" className="block text-sm font-medium mb-2">
-                  Bio{" "}
+                  Biografija{" "}
                   <span className="text-text-secondary font-normal">
-                    (optional)
+                    (opciono)
                   </span>
                 </label>
                 <textarea
                   id="bio"
                   name="bio"
                   rows={3}
-                  placeholder="Tell applicants about yourself..."
+                  placeholder="Opišite se aplikanima..."
                   className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all resize-none"
                 />
               </div>
@@ -312,7 +312,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                 >
                   LinkedIn URL{" "}
                   <span className="text-text-secondary font-normal">
-                    (optional)
+                    (opciono)
                   </span>
                 </label>
                 <input
@@ -339,9 +339,9 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   htmlFor="phone"
                   className="block text-sm font-medium mb-2"
                 >
-                  Phone{" "}
+                  Telefon{" "}
                   <span className="text-text-secondary font-normal">
-                    (optional)
+                    (opciono)
                   </span>
                 </label>
                 <input
@@ -357,7 +357,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   htmlFor="city"
                   className="block text-sm font-medium mb-2"
                 >
-                  City
+                  Grad
                 </label>
                 <input
                   id="city"
@@ -383,17 +383,17 @@ export default function Register({ actionData }: Route.ComponentProps) {
             className="w-full py-4 text-base"
           >
             {isSubmitting
-              ? "Creating Account..."
-              : "Create Account & Send Code"}
+              ? "Kreiranje naloga..."
+              : "Kreirajte nalog i pošaljite kod"}
           </Button>
 
           <p className="text-center text-sm text-text-secondary">
-            Already have an account?{" "}
+            Već imate nalog?{" "}
             <a
               href={`/login?redirect=${encodeURIComponent(redirectTo)}`}
               className="text-primary hover:text-primary-light transition-colors font-medium"
             >
-              Sign In
+              Prijavite se
             </a>
           </p>
         </Form>
