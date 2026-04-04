@@ -5,10 +5,7 @@ import type { Route } from "./+types/discover";
 import { analyzeLocation } from "~/lib/openai.server";
 import { fetchMitrovicaPois } from "~/lib/overpass.server";
 import type { DiscoverResult } from "~/lib/types";
-import {
-  BUSINESS_ZONES,
-  type BusinessZone,
-} from "~/lib/constants";
+import { BUSINESS_ZONES, type BusinessZone } from "~/lib/constants";
 import { Button } from "~/components/ui/button";
 import { ScoreRing } from "~/components/ui/score-ring";
 import { CardSkeleton } from "~/components/ui/skeleton";
@@ -92,7 +89,7 @@ const ZONE_RATING_LABELS = {
     dot: "bg-green-500",
   },
   yellow: {
-    label: "Umjereni Potencijal",
+    label: "Umereni Potencijal",
     bg: "bg-amber-100",
     text: "text-amber-700",
     border: "border-amber-300",
@@ -111,7 +108,7 @@ const BUSINESS_TYPES_SR = [
   { id: "physical", label: "Fizicka prodavnica" },
   { id: "online", label: "Online / Kucni" },
   { id: "delivery", label: "Dostava" },
-  { id: "mixed", label: "Mjesovito" },
+  { id: "mixed", label: "Mesovito" },
 ] as const;
 
 const CATEGORIES_SR = [
@@ -239,9 +236,7 @@ export default function Discover({
 
             {/* Lokacija */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Lokacija
-              </label>
+              <label className="block text-sm font-medium mb-2">Lokacija</label>
               <div
                 className={`rounded-xl px-4 py-3 text-sm border transition-colors cursor-default ${
                   selectedLocation
@@ -266,7 +261,11 @@ export default function Discover({
                   onChange={(e) => setBusinessType(e.target.value)}
                   className="w-full rounded-xl px-4 py-3 text-sm border border-border-subtle bg-white/60 text-text-primary appearance-none cursor-pointer focus:outline-none focus:border-secondary/50 focus:bg-secondary/5 transition-colors pr-10"
                 >
-                  <option value="" disabled className="bg-bg-secondary text-text-primary">
+                  <option
+                    value=""
+                    disabled
+                    className="bg-bg-secondary text-text-primary"
+                  >
                     Izaberi tip
                   </option>
                   {BUSINESS_TYPES_SR.map((bt) => (
@@ -321,7 +320,8 @@ export default function Discover({
               <label className="block text-sm font-medium mb-2">
                 Budzet{" "}
                 <span className="text-secondary font-bold">
-                  {"\u20ac"}{budget.toLocaleString()}
+                  {"\u20ac"}
+                  {budget.toLocaleString()}
                 </span>
               </label>
               <input
@@ -337,7 +337,8 @@ export default function Discover({
               <div className="flex justify-between text-xs text-text-secondary mt-1.5">
                 <span>{"\u20ac"}5,000</span>
                 <span className="text-secondary font-medium">
-                  {"\u20ac"}{budget.toLocaleString()}
+                  {"\u20ac"}
+                  {budget.toLocaleString()}
                 </span>
                 <span>{"\u20ac"}100,000</span>
               </div>

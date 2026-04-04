@@ -124,7 +124,8 @@ export default function Register({ actionData }: Route.ComponentProps) {
             Pridružite se MitroStart-u
           </h1>
           <p className="text-text-secondary">
-            Registrujte se da biste aplicirali za investiciju ili pregledali ideje
+            Registrujte se da biste aplicirali za investiciju ili pregledali
+            ideje
           </p>
         </div>
 
@@ -348,7 +349,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
                   id="phone"
                   name="phone"
                   type="tel"
-                  placeholder="+383 ..."
+                  placeholder="+381 ..."
                   className="w-full rounded-xl bg-white/60 border border-border-subtle px-4 py-3 text-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
                 />
               </div>

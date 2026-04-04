@@ -98,10 +98,25 @@ Respond with a JSON object in this exact format:
       }
     ],
     "monthlyRunningCost": number
+  },
+  "zoneRatings": {
+    "north-main-square": "green or yellow or red",
+    "bridge-commercial": "green or yellow or red",
+    "north-bazaar": "green or yellow or red",
+    "north-residential-west": "green or yellow or red",
+    "north-residential-east": "green or yellow or red",
+    "north-upper-center": "green or yellow or red",
+    "industrial-northwest": "green or yellow or red",
+    "far-northeast": "green or yellow or red"
   }
 }
 
 For the budgetBreakdown: provide 5-7 items covering categories such as Rent & Deposit, Equipment, Inventory/Stock, Marketing, Staff/Salaries, Working Capital, and Other Setup Costs as appropriate. Percentages must sum to 100. Amounts must reflect how the available budget (${budget} EUR) would be allocated. monthlyRunningCost is the estimated ongoing monthly operating cost in EUR.
+
+For zoneRatings: rate each of the 8 zone keys based on how suitable that zone of Kosovska Mitrovica is for THIS specific business idea. Use exactly the string "green", "yellow", or "red" for each value.
+- "green" = high potential (right demographics, good foot traffic, low competition for this niche)
+- "yellow" = moderate potential (some fit but with challenges)
+- "red" = poor fit (wrong demographics, too much competition, or wrong zone type)
 
 Be honest but constructive. If the idea needs work, explain why and offer concrete pivot suggestions. Consider the local market size, purchasing power, cultural factors, and infrastructure.`;
 }

@@ -1,14 +1,26 @@
 import { Form, useActionData, useNavigation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useCallback } from "react";
 import type { Route } from "./+types/evaluate";
 import { evaluateIdea } from "~/lib/openai.server";
 import type { EvaluateResult } from "~/lib/types";
-import { BUDGET_MIN, BUDGET_MAX, BUDGET_STEP } from "~/lib/constants";
+import {
+  BUDGET_MIN,
+  BUDGET_MAX,
+  BUDGET_STEP,
+  BUSINESS_ZONES,
+  type BusinessZone,
+  type ZoneRating,
+} from "~/lib/constants";
 import { Button } from "~/components/ui/button";
 import { ScoreRing } from "~/components/ui/score-ring";
 import { CardSkeleton, ScoreSkeleton } from "~/components/ui/skeleton";
 import { BudgetBreakdown } from "~/components/ui/budget-breakdown";
-import { useState } from "react";
+import { CyberpunkMap } from "~/components/ui/cyberpunk-map";
+import {
+  ZoneOverlays,
+  ZONE_INTERACTIVE_LAYER_IDS,
+} from "~/components/ui/zone-overlays";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,6 +30,12 @@ export function meta({}: Route.MetaArgs) {
       content: "Dobij AI evaluaciju tvoje poslovne ideje za Kosovsku Mitrovicu",
     },
   ];
+}
+
+export async function loader() {
+  return {
+    maptilerKey: process.env.MAPTILER_API_KEY || "",
+  };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -42,12 +60,50 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export default function Evaluate({ actionData }: Route.ComponentProps) {
+const ZONE_RATING_LABELS = {
+  green: {
+    label: "Visoki Potencijal",
+    bg: "bg-green-500/15",
+    text: "text-green-400",
+    border: "border-green-500/30",
+    dot: "bg-green-500",
+  },
+  yellow: {
+    label: "Umereni Potencijal",
+    bg: "bg-amber-500/15",
+    text: "text-amber-400",
+    border: "border-amber-500/30",
+    dot: "bg-amber-500",
+  },
+  red: {
+    label: "Slaba Lokacija",
+    bg: "bg-red-500/15",
+    text: "text-red-400",
+    border: "border-red-500/30",
+    dot: "bg-red-500",
+  },
+} as const;
+
+export default function Evaluate({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const [budget, setBudget] = useState(5000);
+  const [activeZone, setActiveZone] = useState<BusinessZone | null>(null);
   const result = actionData?.result as EvaluateResult | null;
   const error = actionData?.error as string | null;
+
+  const handleZoneClick = useCallback((zone: BusinessZone) => {
+    setActiveZone(zone);
+  }, []);
+
+  const getEffectiveRating = (zoneId: string): ZoneRating => {
+    const r = result?.zoneRatings?.[zoneId];
+    if (r === "green" || r === "yellow" || r === "red") return r;
+    return BUSINESS_ZONES.find((z) => z.id === zoneId)?.rating ?? "yellow";
+  };
 
   return (
     <div className="min-h-screen pt-20 pb-16 px-6">
@@ -411,6 +467,138 @@ export default function Evaluate({ actionData }: Route.ComponentProps) {
                     </motion.div>
                   )}
               </div>
+
+              {/* ── Zone Suitability Map ── */}
+              {result.zoneRatings && loaderData?.maptilerKey && (
+                <motion.div
+                  className="mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.6 }}
+                >
+                  <div className="glass rounded-2xl overflow-hidden">
+                    {/* Header */}
+                    <div className="px-6 pt-6 pb-4">
+                      <h3 className="font-bold text-lg mb-1">
+                        Mapa Lokacijskih Šansi
+                      </h3>
+                      <p className="text-sm text-text-secondary mb-3">
+                        AI je ocijenio svaku zonu Mitrovice za vašu poslovnu
+                        ideju. Kliknite na zonu za detalje.
+                      </p>
+                      {/* Legend */}
+                      <div className="flex flex-wrap gap-4 text-xs">
+                        {(["green", "yellow", "red"] as const).map((r) => (
+                          <span key={r} className="flex items-center gap-1.5">
+                            <span
+                              className={`w-2.5 h-2.5 rounded-full ${ZONE_RATING_LABELS[r].dot}`}
+                            />
+                            <span className="text-text-secondary">
+                              {ZONE_RATING_LABELS[r].label}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Map */}
+                    <div className="relative" style={{ height: 420 }}>
+                      <CyberpunkMap
+                        maptilerKey={loaderData.maptilerKey}
+                        className="w-full h-full"
+                        minHeight={420}
+                        interactiveLayerIds={ZONE_INTERACTIVE_LAYER_IDS}
+                      >
+                        <ZoneOverlays
+                          onZoneClick={handleZoneClick}
+                          zoneRatings={
+                            result.zoneRatings as Record<
+                              string,
+                              "green" | "yellow" | "red"
+                            >
+                          }
+                        />
+                      </CyberpunkMap>
+
+                      {/* Active zone info card */}
+                      <div className="absolute top-3 right-3 w-64 z-20 pointer-events-none">
+                        <AnimatePresence mode="wait">
+                          {activeZone && (
+                            <motion.div
+                              key={activeZone.id}
+                              className={`glass rounded-2xl p-4 border pointer-events-auto ${
+                                ZONE_RATING_LABELS[
+                                  getEffectiveRating(activeZone.id)
+                                ].border
+                              }`}
+                              initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <div className="flex items-start justify-between mb-2">
+                                <div>
+                                  <span
+                                    className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-1 ${
+                                      ZONE_RATING_LABELS[
+                                        getEffectiveRating(activeZone.id)
+                                      ].text
+                                    }`}
+                                  >
+                                    <span
+                                      className={`w-2 h-2 rounded-full ${
+                                        ZONE_RATING_LABELS[
+                                          getEffectiveRating(activeZone.id)
+                                        ].dot
+                                      }`}
+                                    />
+                                    {
+                                      ZONE_RATING_LABELS[
+                                        getEffectiveRating(activeZone.id)
+                                      ].label
+                                    }
+                                  </span>
+                                  <h4 className="font-bold text-sm">
+                                    {activeZone.name}
+                                  </h4>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveZone(null)}
+                                  className="text-text-secondary hover:text-white transition-colors text-lg leading-none cursor-pointer ml-2 shrink-0"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              <p className="text-xs text-text-secondary mb-2">
+                                {activeZone.description}
+                              </p>
+                              <div className="flex flex-wrap gap-1">
+                                {activeZone.highlights.map((h) => (
+                                  <span
+                                    key={h}
+                                    className={`text-xs px-2 py-0.5 rounded-full ${
+                                      ZONE_RATING_LABELS[
+                                        getEffectiveRating(activeZone.id)
+                                      ].bg
+                                    } ${
+                                      ZONE_RATING_LABELS[
+                                        getEffectiveRating(activeZone.id)
+                                      ].text
+                                    }`}
+                                  >
+                                    {h}
+                                  </span>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

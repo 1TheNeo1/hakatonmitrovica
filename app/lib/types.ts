@@ -119,6 +119,7 @@ export interface EvaluateResult {
   recommendations: string[];
   pivotSuggestions: string[];
   budgetBreakdown?: BudgetBreakdown;
+  zoneRatings?: Record<string, "green" | "yellow" | "red">;
 }
 
 // --- Investor AI types ---

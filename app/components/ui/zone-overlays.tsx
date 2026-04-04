@@ -5,18 +5,28 @@ import {
   BUSINESS_ZONES,
   generateCirclePolygon,
   type BusinessZone,
+  type ZoneRating,
 } from "~/lib/constants";
 import type { MapLayerMouseEvent } from "react-map-gl/maplibre";
 
+const RATING_COLORS: Record<ZoneRating, { color: string; fillColor: string }> = {
+  green: { color: "#22c55e", fillColor: "#22c55e" },
+  yellow: { color: "#eab308", fillColor: "#eab308" },
+  red: { color: "#ef4444", fillColor: "#ef4444" },
+};
+
 interface ZoneOverlaysProps {
   onZoneClick?: (zone: BusinessZone) => void;
+  /** Optional per-zone rating overrides (keyed by zone id). When provided,
+   *  these ratings replace the default ratings from BUSINESS_ZONES. */
+  zoneRatings?: Record<string, ZoneRating>;
 }
 
 /**
  * Renders business-zone circles as declarative MapLibre polygon layers with
  * neon glow outlines. Supports click and hover interactions.
  */
-export function ZoneOverlays({ onZoneClick }: ZoneOverlaysProps) {
+export function ZoneOverlays({ onZoneClick, zoneRatings }: ZoneOverlaysProps) {
   const { current: map } = useMap();
   const [hoveredZoneId, setHoveredZoneId] = useState<string | null>(null);
 
@@ -24,23 +34,27 @@ export function ZoneOverlays({ onZoneClick }: ZoneOverlaysProps) {
   const geojson = useMemo(
     () => ({
       type: "FeatureCollection" as const,
-      features: BUSINESS_ZONES.map((zone) => ({
-        type: "Feature" as const,
-        id: zone.id,
-        properties: {
+      features: BUSINESS_ZONES.map((zone) => {
+        const effectiveRating: ZoneRating = zoneRatings?.[zone.id] ?? zone.rating;
+        const { color, fillColor } = RATING_COLORS[effectiveRating];
+        return {
+          type: "Feature" as const,
           id: zone.id,
-          name: zone.name,
-          color: zone.color,
-          fillColor: zone.fillColor,
-          rating: zone.rating,
-        },
-        geometry: {
-          type: "Polygon" as const,
-          coordinates: [generateCirclePolygon(zone.center, zone.radius)],
-        },
-      })),
+          properties: {
+            id: zone.id,
+            name: zone.name,
+            color,
+            fillColor,
+            rating: effectiveRating,
+          },
+          geometry: {
+            type: "Polygon" as const,
+            coordinates: [generateCirclePolygon(zone.center, zone.radius)],
+          },
+        };
+      }),
     }),
-    [],
+    [zoneRatings],
   );
 
   const handleClick = useCallback(
